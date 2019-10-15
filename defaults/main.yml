@@ -1,0 +1,100 @@
+---
+
+# Nextcloud version to install. Raise for upgrading.
+nextcloud_version: "{{ '17.0.0' if ansible_distribution_release == 'buster' else '15.0.12' }}"
+
+# List of trusted domain names ('localhost' is always added)
+nextcloud_trusted_domains: []
+
+# Path to the Nextcloud workdir holding Nextcloud instances
+nextcloud_workdir: "/var/www/nextcloud"
+# Path to the current Nextcloud instance
+nextcloud_instance: "{{ nextcloud_workdir }}/nextcloud-{{ nextcloud_version }}"
+# Path to the symlink pointing to the current Nextcloud instance
+nextcloud_symlink: "{{ nextcloud_workdir }}/nextcloud-current"
+nextcloud_webroot: "{{ nextcloud_symlink }}"
+
+# Path to the Nextcloud data directory
+nextcloud_data_dir: "/srv/nextcloud/data"
+
+# Configure the Apache2 php.ini automatically?
+nextcloud_apache_php: yes
+
+nextcloud_php_version: "{{ '7.0' if ansible_distribution_major_version|int == 9 else '7.3' }}"
+
+# Set custom PHP file size limits
+nextcloud_php_settings:
+  upload_max_filesize: "511M"
+  post_max_size: "511M"
+  memory_limit: "512M"
+  # max_input_time: 60
+  # max_execution_time: 60
+
+# Nextcloud system, MySQL and web user settings
+nextcloud_http_user: www-data
+nextcloud_http_group: www-data
+nextcloud_mysql_user: nextcloud
+# nextcloud_mysql_password:
+nextcloud_mysql_user_host: "localhost"
+nextcloud_mysql_db: nextcloud
+nextcloud_mysql_host: "localhost"
+nextcloud_mysql_host_delegate: "{{ inventory_hostname }}"
+nextcloud_admin_user: admin
+# nextcloud_admin_password:
+
+# Make Nextcloud available over a webserver alias?
+nextcloud_www_alias: yes
+nextcloud_www_alias_name: "nextcloud"
+
+# List of Nextcloud Apps to install/enable
+nextcloud_apps: []
+
+# List of Nextcloud Apps to disable.
+nextcloud_apps_disabled: []
+
+# Upgrade nextcloud Apps?
+nextcloud_apps_upgrade: False
+
+# How to install Nextcloud (supported: 'git' or 'tar')
+nextcloud_src_type: "tar"
+
+# The Git repository holding Nextcloud server
+nextcloud_repo: "https://github.com/nextcloud/server"
+# The URL for Nextcloud release tarballs and signatures
+nextcloud_tar_url: "https://download.nextcloud.com/server/releases/nextcloud-{{ nextcloud_version }}.tar.bz2"
+nextcloud_sig_url: "{{ nextcloud_tar_url }}.asc"
+
+# The Nextcloud upstream GPG key used for signing
+nextcloud_gpg_key: "28806A878AE423A28372792ED75899B9A724937A"
+
+# Backup Nextcloud instance before upgrade?
+nextcloud_backup: yes
+nextcloud_backup_data: no
+nextcloud_backup_dir: "/var/backups/nextcloud"
+
+# Dependencies (Debian packages) to install
+nextcloud_dependencies_general:
+  - acl  # for ansible temp files
+  - "{{ 'git' if nextcloud_src_type == 'git' else 'bzip2' }}"
+  - "{{ 'gpgv' if nextcloud_src_type == 'tar' }}"
+  - php-pear
+nextcloud_dependencies_php_post_jessie:
+  - php-apcu
+  - php-bz2
+  - php-curl
+  - php-gd
+  - php-gmp
+  - php-imagick
+  - php-imap
+  - php-intl
+  - php-json
+  - php-ldap
+  - php-mbstring
+  - php-mysql
+  - php-smbclient
+  - php-xml
+  - php-zip
+nextcloud_dependencies: "{{ nextcloud_dependencies_general + nextcloud_dependencies_php_post_jessie }}"
+nextcloud_dependencies_python:
+  - python-mysqldb
+  - python-semantic-version

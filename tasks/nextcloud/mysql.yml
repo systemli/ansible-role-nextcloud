@@ -1,0 +1,17 @@
+---
+
+- name: create Nextcloud MySQL database
+  mysql_db:
+    name: "{{ nextcloud_mysql_db }}"
+    state: present
+  delegate_to: "{{ nextcloud_mysql_host_delegate }}"
+  register: nextcloud_reg_database_status
+
+- name: create Nextcloud MySQL database user
+  mysql_user:
+    name: "{{ nextcloud_mysql_user }}"
+    host: "{{ nextcloud_mysql_user_host }}"
+    password: "{{ nextcloud_mysql_password }}"
+    priv: "{{ nextcloud_mysql_db }}.*:ALL"
+    state: present
+  delegate_to: "{{ nextcloud_mysql_host_delegate }}"

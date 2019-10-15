@@ -1,0 +1,30 @@
+---
+
+- name: "Nextcloud finalize: create webroot for new instance"
+  file:
+    path: "{{ nextcloud_instance }}"
+    state: directory
+    mode: 0755
+  register: nextcloud_instance_created
+
+- name: "Nextcloud finalize: assert that Nextcloud instance webroot didn't exist"
+  assert:
+    that:
+      - nextcloud_instance_created.changed
+    msg: "Error: Nextcloud instance webroot already existed: {{ nextcloud_instance }}"
+
+- name: "Nextcloud finalize: move new Nextcloud to nextcloud_instance"
+  command: "cp -a {{ nextcloud_dl_tmp_dir }}/nextcloud/. {{ nextcloud_instance }}/"
+
+- name: "Nextcloud finalize: remove temporary download directory"
+  file:
+    path: "{{ nextcloud_dl_tmp_dir }}"
+    state: absent
+
+- name: "Nextcloud finalize: change symlink to nextcloud_instance"
+  file:
+    src: "{{ nextcloud_instance.rsplit('/', 1)[-1] }}"
+    dest: "{{ nextcloud_symlink }}"
+    state: link
+    owner: root
+    group: root

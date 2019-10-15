@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  role_name: nextcloud
+  author: systemli.org
+  description: Role to deploy and upgrade Nextcloud instances on Debian
+  company: freesources.org
+  license: GPLv3
+  min_ansible_version: 2.2
+  galaxy_tags:
+    - nextcloud
+  platforms:
+    - name: Debian
+      versions:
+        - stretch
+        - buster
+  notifications:
+    webhooks: https://galaxy.ansible.com/api/v1/notifications/
+
+dependencies: []

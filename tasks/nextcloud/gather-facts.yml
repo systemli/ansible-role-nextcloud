@@ -1,0 +1,55 @@
+---
+
+# TODO: Add support for nextcloud_version='latest'
+
+- name: "Nextcloud facts: determine whether instance is already installed"
+  stat:
+    path: "{{ nextcloud_webroot }}/version.php"
+  register: nextcloud_reg_installed
+
+- name: "Nextcloud facts: determine whether instance is to be installed"
+  set_fact:
+    nextcloud_reg_do_install: "{{ nextcloud_reg_installed.stat.exists|ternary('no', 'yes') }}"
+
+- name: "Nextcloud facts: get instance status if already installed"
+  become: true
+  become_user: "{{ nextcloud_http_user }}"
+  command: php occ status --output=json
+  args:
+    chdir: "{{ nextcloud_webroot }}"
+  register: nextcloud_reg_status_json
+  changed_when: false
+  check_mode: no
+  when: not nextcloud_reg_do_install
+
+# Safety check: 'occ status' output not plain json if in maintenance mode
+- name: "Nextcloud facts: assert that Nextcloud not in maintenance mode"
+  assert:
+    that:
+      - not "Nextcloud is in maintenance mode" in nextcloud_reg_status_json.stdout|d()
+      - nextcloud_reg_status_json.rc|d(0) == 0
+    msg: "Error: Nextcloud already in maintenance mode or other error"
+
+- name: "Nextcloud facts: parse instance status if already installed"
+  set_fact:
+    nextcloud_reg_version: "{{ (nextcloud_reg_status_json.stdout|d())|from_json|json_query('[versionstring]')|join() if nextcloud_reg_status_json.stdout|d() else {} }}"
+
+- name: "Nextcloud facts: set nextcloud_webroot_old based on nextcloud_reg_version"
+  set_fact:
+    nextcloud_webroot_old: "{{ nextcloud_webroot.rsplit('/', 1)[-2] }}/nextcloud-{{ nextcloud_reg_version }}"
+
+- name: "Nextcloud facts: determine whether installation or upgrade"
+  set_fact:
+    nextcloud_reg_do_upgrade: "{{ ((not nextcloud_reg_do_install) and nextcloud_reg_version|d() and nextcloud_reg_version != nextcloud_version)|ternary('yes', 'no') }}"
+
+- name: "Nextcloud facts: determine if config.php exists"
+  stat:
+    path: "{{ nextcloud_symlink }}/config/config.php"
+  register: nextcloud_reg_config
+
+- name: "Nextcloud facts: assert that data dir is outside nextcloud_webroot"
+  assert:
+    that:
+      - not nextcloud_data_dir.startswith(nextcloud_webroot)
+      - not nextcloud_data_dir.startswith(nextcloud_symlink)
+    msg: "Error: Data directory ({{ nextcloud_data_dir }}) is inside nextcloud_webroot ({{ nextcloud_webroot }}). Not supported."

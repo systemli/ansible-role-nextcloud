@@ -1,0 +1,10 @@
+{{ nextcloud_data_dir }}/nextcloud.log {
+	weekly
+	missingok
+	rotate 2
+	compress
+	delaycompress
+	notifempty
+	create 660 {{ nextcloud_http_user }} {{ nextcloud_http_group }}
+	su {{ nextcloud_http_user }} {{ nextcloud_http_group }}
+}

@@ -1,0 +1,22 @@
+---
+
+- name: "Nextcloud maintenance page: create directory"
+  file:
+    path: "{{ nextcloud_workdir }}/nextcloud-maintenance"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Nextcloud maintenance page: copy files"
+  template:
+    src: "nextcloud/nextcloud-maintenance/{{ nextcloud_maint_item }}.j2"
+    dest: "{{ nextcloud_workdir }}/nextcloud-maintenance/{{ nextcloud_maint_item }}"
+    owner: root
+    group: root
+    mode: 0644
+  loop_control:
+    loop_var: nextcloud_maint_item
+  with_items:
+    - index.html
+    - .htaccess

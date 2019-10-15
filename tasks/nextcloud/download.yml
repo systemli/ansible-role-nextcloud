@@ -1,0 +1,58 @@
+---
+
+- name: "Nextcloud download: create temporary download directory"
+  file:
+    name: "{{ nextcloud_dl_tmp_dir }}"
+    state: directory
+
+- name: "Nextcloud download: clone version branch from git repo"
+  git:
+    repo: "{{ nextcloud_repo }}"
+    dest: "{{ nextcloud_dl_tmp_dir }}/nextcloud"
+    version: "v{{ nextcloud_version }}"
+  when: nextcloud_src_type == "git"
+
+- block:
+    - name: "Nextcloud download: fetch version tarball and signature"
+      get_url:
+        dest: "{{ nextcloud_dl_tmp_dir }}"
+        url: "{{ item }}"
+      with_items:
+        - "{{ nextcloud_tar_url }}"
+        - "{{ nextcloud_sig_url }}"
+    - name: "Nextcloud download: provide upstream signing-key"
+      copy:
+        dest: "{{ nextcloud_dl_tmp_dir }}"
+        src: "{{ nextcloud_gpg_key }}.gpg"
+    - name: "Nextcloud download: verify signature of tarball"
+      args:
+        chdir: "{{ nextcloud_dl_tmp_dir }}"
+      command: >
+        gpgv --keyring ./{{ nextcloud_gpg_key }}.gpg
+        {{ nextcloud_sig_url | basename }}
+        {{ nextcloud_tar_url | basename }}
+    - name: "Nextcloud download: extract tarball"
+      unarchive:
+        dest: "{{ nextcloud_dl_tmp_dir }}"
+        src: "{{ nextcloud_dl_tmp_dir }}/{{ nextcloud_tar_url | basename }}"
+        remote_src: yes
+  when: nextcloud_src_type == "tar"
+
+- name: "Nextcloud download: adjust owner for installation/upgrade"
+  file:
+    path: "{{ nextcloud_dl_tmp_dir }}"
+    state: directory
+    owner: "{{ nextcloud_http_user }}"
+    group: "{{ nextcloud_http_group }}"
+    recurse: yes
+
+- name: "Nextcloud download: check if new version has been downloaded"
+  stat:
+    path: "{{ nextcloud_dl_tmp_dir }}/nextcloud/version.php"
+  register: nextcloud_reg_dl_post
+
+- name: "Nextcloud download: assert that new Nextcloud version got fetched"
+  assert:
+    that:
+      - nextcloud_reg_dl_post.stat.exists
+    msg: "Error: Failed to fetch new Nextcloud version"

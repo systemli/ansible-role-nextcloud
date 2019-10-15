@@ -1,0 +1,39 @@
+---
+
+- name: "Nextcloud backup: Create backup folder"
+  file:
+    path: "{{ nextcloud_backup_dir }}"
+    state: directory
+
+- name: "Nextcloud backup: backup MySQL database"
+  command: >
+    mysqldump --lock-tables
+    -h {{ nextcloud_mysql_host }}
+    -u {{ nextcloud_mysql_user }}
+    -p{{ nextcloud_mysql_password }}
+    {{ nextcloud_mysql_db }} -r {{ nextcloud_backup_db }}
+  args:
+    creates: "{{ nextcloud_backup_db }}"
+
+- name: "Nextcloud backup: backup config.php"
+  copy:
+    src: "{{ nextcloud_webroot_old }}/config/config.php"
+    dest: "{{ nextcloud_backup_config }}"
+    remote_src: yes
+
+- name: "Nextcloud backup: backup data directory"
+  command: "cp -a {{ nextcloud_data_dir }} {{ nextcloud_backup_data }}"
+  args:
+    creates: "{{ nextcloud_backup_data }}"
+  when: nextcloud_backup_data|d()
+
+- name: "Nextcloud backup: Verify backup"
+  stat:
+    path: "{{ nextcloud_backup_item }}"
+  register: nextcloud_reg_backup_size
+  failed_when: nextcloud_reg_backup_size.stat.size is undefined or nextcloud_reg_backup_size.stat.size <= 10
+  loop_control:
+    loop_var: nextcloud_backup_item
+  with_items:
+    - "{{ nextcloud_backup_db }}"
+    - "{{ nextcloud_backup_config }}"
