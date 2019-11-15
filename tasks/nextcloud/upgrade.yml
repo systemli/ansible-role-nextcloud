@@ -29,7 +29,6 @@
   become_user: "{{ nextcloud_http_user }}"
   command: >
       php occ upgrade
-      --no-app-disable
       --no-interaction
       --no-warnings
   args:
