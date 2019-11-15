@@ -2,19 +2,21 @@
 
 # Harden permissions, taken from https://docs.nextcloud.com/server/11/admin_manual/installation/installation_wizard.html#strong-perms-label
 
-- name: "Nextcloud harden: create missing directories"
+- name: "Nextcloud harden: create data directory if missing"
   file:
-    path: "{{ nextcloud_harden_item }}"
+    path: "{{ nextcloud_data_dir }}"
     state: directory
     owner: "{{ nextcloud_http_user }}"
     group: "{{ nextcloud_http_group }}"
     mode: "u=rwX,g=rX,o-rwx"
-    recurse: yes
-  loop_control:
-    loop_var: nextcloud_harden_item
-  with_items:
-    - "{{ nextcloud_data_dir }}"
-    - "{{ nextcloud_dl_tmp_dir }}/nextcloud/updater"
+
+- name: "Nextcloud harden: create missing directory for updater"
+  file:
+    path: "{{ nextcloud_dl_tmp_dir }}/nextcloud/updater"
+    state: directory
+    owner: "{{ nextcloud_http_user }}"
+    group: "{{ nextcloud_http_group }}"
+    mode: "u=rwX,g=rX,o-rwx"
 
 - name: "Nextcloud harden: chmod+chown files and directories (rwXr-X---, root:<group>)"
   file:
@@ -40,7 +42,6 @@
   loop_control:
     loop_var: nextcloud_harden_item
   with_items:
-    - "{{ nextcloud_data_dir }}"
     - "{{ nextcloud_dl_tmp_dir }}/nextcloud/apps"
     - "{{ nextcloud_dl_tmp_dir }}/nextcloud/config"
     - "{{ nextcloud_dl_tmp_dir }}/nextcloud/themes"
