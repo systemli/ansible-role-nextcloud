@@ -4,7 +4,7 @@
   become: true
   roles:
     - role: systemli.mariadb
-    - role: ansible-role-nextcloud
+    - role: systemli.nextcloud
   vars:
     nextcloud_apache_php: False
     nextcloud_admin_password: topsecret
