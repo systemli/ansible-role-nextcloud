@@ -1,4 +1,7 @@
 ---
+scenario:
+  name: docker
+
 dependency:
   name: galaxy
   options:
@@ -21,7 +24,3 @@ provisioner:
     enabled: False
   playbooks:
     converge: ../default/playbook.yml
-verifier:
-  name: testinfra
-  lint:
-    name: flake8

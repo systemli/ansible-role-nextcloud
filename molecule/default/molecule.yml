@@ -1,12 +1,14 @@
 ---
+scenario:
+  name: default
 driver:
   name: vagrant
   provider:
     name: virtualbox
 platforms:
-  - name: buster64
+  - name: nextcloud-buster64
     box: debian/buster64
-  - name: stretch64
+  - name: nextcloud-stretch64
     box: debian/stretch64
 provisioner:
   name: ansible
