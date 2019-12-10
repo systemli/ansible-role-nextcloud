@@ -9,4 +9,3 @@
     nextcloud_apache_php: False
     nextcloud_admin_password: topsecret
     nextcloud_mysql_password: topsecret
-    nextcloud_version: "{{ '17.0.0' if ansible_distribution_release == 'buster' else '15.0.12' }}"

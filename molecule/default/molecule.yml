@@ -12,6 +12,7 @@ platforms:
     box: debian/stretch64
 provisioner:
   name: ansible
+  side_effect: side_effect.yml
   lint:
     name: ansible-lint
     enabled: False

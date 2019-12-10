@@ -19,6 +19,7 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
+  side_effect: ../default/side_effect.yml
   lint:
     name: ansible-lint
     enabled: False

@@ -1,7 +1,7 @@
 ---
 
 # Nextcloud version to install. Raise for upgrading.
-nextcloud_version: "{{ '17.0.0' if ansible_distribution_release == 'buster' else '15.0.12' }}"
+nextcloud_version: "{{ '17.0.1' if ansible_distribution_release == 'buster' else '15.0.13' }}"
 
 # List of trusted domain names ('localhost' is always added)
 nextcloud_trusted_domains: []
