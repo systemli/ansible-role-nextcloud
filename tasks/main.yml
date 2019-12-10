@@ -66,13 +66,6 @@
   tags:
     - role:nextcloud:upgrade
 
-- name: harden Nextcloud installation
-  include: nextcloud/harden.yml
-  when: nextcloud_reg_do_install|bool or nextcloud_reg_do_upgrade|bool
-  tags:
-    - role:nextcloud:install
-    - role:nextcloud:upgrade
-
 - name: finalize Nextcloud instance
   include: nextcloud/finalize.yml
   when: nextcloud_reg_do_install|bool or nextcloud_reg_do_upgrade|bool
