@@ -8,6 +8,15 @@
     group: "{{ nextcloud_http_group }}"
     mode: 0750
 
+- name: "Nextcloud configure: create data directory if missing"
+  file:
+    path: "{{ nextcloud_skeleton_dir }}"
+    state: directory
+    owner: "{{ nextcloud_http_user }}"
+    group: "{{ nextcloud_http_group }}"
+    mode: 0750
+  when: nextcloud_skeleton_dir is defined
+
 - name: "Nextcloud configure: install via occ commandline"
   become: true
   become_user: "{{ nextcloud_http_user }}"
@@ -44,3 +53,11 @@
   with_items:
     - "  'memcache.local' => '\\OC\\Memcache\\APCu',"
     - "  'open_basedir' => '/dev/urandom'"
+
+- name: "Nextcloud configure: set skeleton directory"
+  lineinfile:
+    dest: "{{ nextcloud_dl_tmp_dir }}/nextcloud/config/config.php"
+    line: "    'skeletondirectory' => '{{ nextcloud_skeleton_dir }}',"
+    insertbefore: "\\);"
+    state: present
+  when: nextcloud_skeleton_dir is defined
