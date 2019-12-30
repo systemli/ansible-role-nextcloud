@@ -8,14 +8,25 @@
     group: "{{ nextcloud_http_group }}"
     mode: 0750
 
-- name: "Nextcloud configure: create data directory if missing"
-  file:
-    path: "{{ nextcloud_skeleton_dir }}"
-    state: directory
+- name: "Nextcloud configure: copy skeleton directory"
+  copy:
+    src: "nextcloud/skeleton/"
+    dest: "{{ nextcloud_skeleton_dir }}"
     owner: "{{ nextcloud_http_user }}"
     group: "{{ nextcloud_http_group }}"
-    mode: 0750
+    mode: 0640
+    drectory_mode: 0750
   when: nextcloud_skeleton_dir is defined
+
+- name: "Nextcloud configure: copy theme"
+  copy:
+    src: "nextcloud/themes/{{ nextcloud_theme }}"
+    dest: "{{ nextcloud_dl_tmp_dir }}/nextcloud/themes/"
+    owner: "{{ nextcloud_http_user }}"
+    group: "{{ nextcloud_http_group }}"
+    mode: 0640
+    directory_mode: 0750
+  when: nextcloud_theme is defined
 
 - name: "Nextcloud configure: install via occ commandline"
   become: true
@@ -61,3 +72,11 @@
     insertbefore: "\\);"
     state: present
   when: nextcloud_skeleton_dir is defined
+
+- name: "Nextcloud configure: set theme"
+  lineinfile:
+    dest: "{{ nextcloud_dl_tmp_dir }}/nextcloud/config/config.php"
+    line: "    'theme' => '{{ nextcloud_theme }}',"
+    rexexp: "'theme' =>"
+    state: present
+  when: nextcloud_theme is defined
