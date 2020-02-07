@@ -1,12 +1,8 @@
 ---
 
-- name: "Nextcloud configure: create data directory if missing"
-  file:
-    path: "{{ nextcloud_data_dir }}"
-    state: directory
-    owner: "{{ nextcloud_http_user }}"
-    group: "{{ nextcloud_http_group }}"
-    mode: 0750
+- name: "Nextcloud configure: set Nextcloud directory"
+  set_fact:
+    __nextcloud_install_dir: "{{ nextcloud_dl_tmp_dir + '/nextcloud' if (nextcloud_reg_do_install|bool or nextcloud_reg_do_upgrade|bool) else nextcloud_instance }}"
 
 - name: "Nextcloud configure: copy skeleton directory"
   copy:
@@ -21,62 +17,98 @@
 - name: "Nextcloud configure: copy theme"
   copy:
     src: "nextcloud/themes/{{ nextcloud_theme }}"
-    dest: "{{ nextcloud_dl_tmp_dir }}/nextcloud/themes/"
+    dest: "{{ __nextcloud_install_dir }}/themes/"
     owner: "{{ nextcloud_http_user }}"
     group: "{{ nextcloud_http_group }}"
     mode: 0640
     directory_mode: 0750
   when: nextcloud_theme is defined
 
-- name: "Nextcloud configure: install via occ commandline"
-  become: true
-  become_user: "{{ nextcloud_http_user }}"
-  command: >
-      php occ maintenance:install
-      --database=mysql
-      --database-host={{ nextcloud_mysql_host }}
-      --database-name={{ nextcloud_mysql_db }}
-      --database-user={{ nextcloud_mysql_user }}
-      --database-pass={{ nextcloud_mysql_password }}
-      --admin-user={{ nextcloud_admin_user }}
-      --admin-pass={{ nextcloud_admin_password }}
-      --data-dir={{ nextcloud_data_dir }}
+- name: "Nextcloud configure: get global preferences"
+  command: php occ config:list --private --output=json
   args:
-    chdir: "{{ nextcloud_dl_tmp_dir }}/nextcloud"
-    creates: "{{ nextcloud_dl_tmp_dir }}/nextcloud/config/config.php"
+    chdir: "{{ __nextcloud_install_dir }}"
+  register: __nextcloud_preferences
+  changed_when: False
+  check_mode: False
+  no_log: True
+  become: True
+  become_user: "{{ nextcloud_http_user }}"
 
-- name: "Nextcloud configure: add trusted domains to config.php"
-  lineinfile:
-    dest: "{{ nextcloud_dl_tmp_dir }}/nextcloud/config/config.php"
-    line: "    {{ item.0 +1 }} => '{{ item.1 }}',"
-    insertafter: "{{ item.0 }} => '"
-    state: present
-  with_indexed_items: "{{ nextcloud_trusted_domains }}"
+- name: "Nextcloud configure: parse global preferences as json and merge configurations"
+  set_fact:
+    __nextcloud_old_preferences:
+      "{{ __nextcloud_preferences.stdout | from_json }}"
+    __nextcloud_updated_preferences: >-
+      {{
+        __nextcloud_preferences.stdout | from_json | combine(nextcloud_config, recursive=True)
+      }}
+  no_log: True
 
-- name: "Nextcloud configure: add local cache and urandom in config.php"
-  lineinfile:
-    dest: "{{ nextcloud_dl_tmp_dir }}/nextcloud/config/config.php"
-    line: "{{ nextcloud_item }}"
-    insertbefore: "\\);"
-    state: present
-  loop_control:
-    loop_var: nextcloud_item
-  with_items:
-    - "  'memcache.local' => '\\OC\\Memcache\\APCu',"
-    - "  'open_basedir' => '/dev/urandom'"
+- name: "Nextcloud configure: configure nextcloud and apps"
+  block:
+    - name: "Nextcloud configure: create temporary config file"
+      tempfile:
+        suffix: nextcloud
+      register: __nextcloud_preferences
+      check_mode: False
 
-- name: "Nextcloud configure: set skeleton directory"
-  lineinfile:
-    dest: "{{ nextcloud_dl_tmp_dir }}/nextcloud/config/config.php"
-    line: "    'skeletondirectory' => '{{ nextcloud_skeleton_dir }}',"
-    insertbefore: "\\);"
-    state: present
-  when: nextcloud_skeleton_dir is defined
+    - name: "Nextcloud configure: save config to file"
+      copy:
+        content: "{{ nextcloud_config | to_json }}"
+        dest: "{{ __nextcloud_preferences.path }}"
+        owner: "{{ nextcloud_http_user }}"
+        group: "{{ nextcloud_http_group }}"
+        mode: 0o400
+      no_log: True
+      check_mode: False
 
-- name: "Nextcloud configure: set theme"
-  lineinfile:
-    dest: "{{ nextcloud_dl_tmp_dir }}/nextcloud/config/config.php"
-    line: "    'theme' => '{{ nextcloud_theme }}',"
-    rexexp: "'theme' =>"
-    state: present
-  when: nextcloud_theme is defined
+    - name: "Nextcloud configure: create temporary config diff file"
+      tempfile:
+        suffix: nextcloud
+      register: __nextcloud_preferences_diff
+      check_mode: False
+
+    - name: "Nextcloud configure: save config to diff file"
+      copy:
+        content: "{{ __nextcloud_old_preferences | to_nice_yaml }}"
+        dest: "{{ __nextcloud_preferences_diff.path }}"
+        owner: "{{ nextcloud_http_user }}"
+        group: "{{ nextcloud_http_group }}"
+        mode: 0o400
+      no_log: True
+      check_mode: False
+
+    - name: "Nextcloud configure: save updated config to file"
+      copy:
+        content: "{{ __nextcloud_updated_preferences | to_nice_yaml }}"
+        dest: "{{ __nextcloud_preferences_diff.path }}"
+        owner: "{{ nextcloud_http_user }}"
+        group: "{{ nextcloud_http_group }}"
+        mode: 0o400
+      check_mode: False
+
+    - name: "Nextcloud configure: set up global preferences"
+      command: php occ config:import "{{ __nextcloud_preferences.path }}"
+      args:
+        chdir: "{{ __nextcloud_install_dir }}"
+      become: True
+      become_user: "{{ nextcloud_http_user }}"
+      register: result
+      changed_when: result is success
+      # TODO: we should switch to an htaccess handler as well
+      notify: nextcloud update htaccess
+      failed_when: (result.stdout is not search('successfully imported')
+        or result is failed)
+
+    - meta: flush_handlers
+
+    - name: "Nextcloud configure: delete temporary config files"
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ __nextcloud_preferences.path }}"
+        - "{{ __nextcloud_preferences_diff.path }}"
+      check_mode: False
+  when: __nextcloud_updated_preferences != __nextcloud_old_preferences

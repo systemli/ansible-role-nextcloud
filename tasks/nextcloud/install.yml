@@ -1,0 +1,26 @@
+---
+
+- name: "Nextcloud configure: create data directory if missing"
+  file:
+    path: "{{ nextcloud_data_dir }}"
+    state: directory
+    owner: "{{ nextcloud_http_user }}"
+    group: "{{ nextcloud_http_group }}"
+    mode: 0750
+
+- name: "Nextcloud install: install via occ commandline"
+  become: true
+  become_user: "{{ nextcloud_http_user }}"
+  command: >
+      php occ maintenance:install
+      --database=mysql
+      --database-host={{ nextcloud_mysql_host }}
+      --database-name={{ nextcloud_mysql_db }}
+      --database-user={{ nextcloud_mysql_user }}
+      --database-pass={{ nextcloud_mysql_password }}
+      --admin-user={{ nextcloud_admin_user }}
+      --admin-pass={{ nextcloud_admin_password }}
+      --data-dir={{ nextcloud_data_dir }}
+  args:
+    chdir: "{{ nextcloud_dl_tmp_dir }}/nextcloud"
+    creates: "{{ nextcloud_dl_tmp_dir }}/nextcloud/config/config.php"

@@ -1,0 +1,82 @@
+---
+
+- name: "Nextcloud configure: create data directory if missing"
+  file:
+    path: "{{ nextcloud_data_dir }}"
+    state: directory
+    owner: "{{ nextcloud_http_user }}"
+    group: "{{ nextcloud_http_group }}"
+    mode: 0750
+
+- name: "Nextcloud configure: copy skeleton directory"
+  copy:
+    src: "nextcloud/skeleton/"
+    dest: "{{ nextcloud_skeleton_dir }}"
+    owner: "{{ nextcloud_http_user }}"
+    group: "{{ nextcloud_http_group }}"
+    mode: 0640
+    drectory_mode: 0750
+  when: nextcloud_skeleton_dir is defined
+
+- name: "Nextcloud configure: copy theme"
+  copy:
+    src: "nextcloud/themes/{{ nextcloud_theme }}"
+    dest: "{{ nextcloud_dl_tmp_dir }}/nextcloud/themes/"
+    owner: "{{ nextcloud_http_user }}"
+    group: "{{ nextcloud_http_group }}"
+    mode: 0640
+    directory_mode: 0750
+  when: nextcloud_theme is defined
+
+- name: "Nextcloud configure: install via occ commandline"
+  become: true
+  become_user: "{{ nextcloud_http_user }}"
+  command: >
+      php occ maintenance:install
+      --database=mysql
+      --database-host={{ nextcloud_mysql_host }}
+      --database-name={{ nextcloud_mysql_db }}
+      --database-user={{ nextcloud_mysql_user }}
+      --database-pass={{ nextcloud_mysql_password }}
+      --admin-user={{ nextcloud_admin_user }}
+      --admin-pass={{ nextcloud_admin_password }}
+      --data-dir={{ nextcloud_data_dir }}
+  args:
+    chdir: "{{ nextcloud_dl_tmp_dir }}/nextcloud"
+    creates: "{{ nextcloud_dl_tmp_dir }}/nextcloud/config/config.php"
+
+- name: "Nextcloud configure: add trusted domains to config.php"
+  lineinfile:
+    dest: "{{ nextcloud_dl_tmp_dir }}/nextcloud/config/config.php"
+    line: "    {{ item.0 +1 }} => '{{ item.1 }}',"
+    insertafter: "{{ item.0 }} => '"
+    state: present
+  with_indexed_items: "{{ nextcloud_trusted_domains }}"
+
+- name: "Nextcloud configure: add local cache and urandom in config.php"
+  lineinfile:
+    dest: "{{ nextcloud_dl_tmp_dir }}/nextcloud/config/config.php"
+    line: "{{ nextcloud_item }}"
+    insertbefore: "\\);"
+    state: present
+  loop_control:
+    loop_var: nextcloud_item
+  with_items:
+    - "  'memcache.local' => '\\OC\\Memcache\\APCu',"
+    - "  'open_basedir' => '/dev/urandom'"
+
+- name: "Nextcloud configure: set skeleton directory"
+  lineinfile:
+    dest: "{{ nextcloud_dl_tmp_dir }}/nextcloud/config/config.php"
+    line: "    'skeletondirectory' => '{{ nextcloud_skeleton_dir }}',"
+    insertbefore: "\\);"
+    state: present
+  when: nextcloud_skeleton_dir is defined
+
+- name: "Nextcloud configure: set theme"
+  lineinfile:
+    dest: "{{ nextcloud_dl_tmp_dir }}/nextcloud/config/config.php"
+    line: "    'theme' => '{{ nextcloud_theme }}',"
+    rexexp: "'theme' =>"
+    state: present
+  when: nextcloud_theme is defined

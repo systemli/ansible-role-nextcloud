@@ -21,6 +21,7 @@
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade
+    - role:nextcloud:configure
     - role:nextcloud:maintenance-page
     - role:nextcloud:database
     - role:nextcloud:backup
@@ -47,11 +48,16 @@
     - role:nextcloud:upgrade
     - role:nextcloud:database
 
-- name: configure Nextcloud
-  include: nextcloud/configure.yml
+- name: install Nextcloud
+  include: nextcloud/install.yml
   when: nextcloud_reg_do_install|bool and not nextcloud_reg_config.stat.exists
   tags:
     - role:nextcloud:install
+
+- name: configure Nextcloud
+  include: nextcloud/configure.yml
+  tags:
+    - role:nextcloud:configure
 
 - name: backup Nextcloud
   include: nextcloud/backup.yml

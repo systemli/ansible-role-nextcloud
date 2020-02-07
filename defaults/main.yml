@@ -3,9 +3,6 @@
 # Nextcloud version to install. Raise for upgrading.
 nextcloud_version: "{{ '18.0.0' if ansible_distribution_release == 'buster' else '15.0.13' }}"
 
-# List of trusted domain names ('localhost' is always added)
-nextcloud_trusted_domains: []
-
 # Path to the Nextcloud workdir holding Nextcloud instances
 nextcloud_workdir: "/var/www/nextcloud"
 # Path to the current Nextcloud instance
@@ -16,6 +13,44 @@ nextcloud_webroot: "{{ nextcloud_symlink }}"
 
 # Path to the Nextcloud data directory
 nextcloud_data_dir: "/srv/nextcloud/data"
+
+# Nextcloud configuration
+nextcloud_config:
+  system:
+    trusted_domains: "{{ nextcloud_trusted_domains | list }}"
+# A yaml array with settings of nextcloud apps.
+#
+# Nextcloud organizes its configuration in two categories:
+# - system: this category contains all basic configuration parameters for the
+#           framework to operate. Its keys are stored in the `config.php` file
+#           of the instance installation's `config` directory.
+# - apps: this category contains settings for the individual apps as well as
+#         for some core components of the framework (in `core`). These settings
+#         are stored in the database directly and require a correctly
+#         configured system to be accessed.
+#
+# For instance:
+# ```
+# nextcloud_config:
+#   apps:
+#     core:
+#       backgroundjobs_mode: cron
+#   system:
+#     overwrite:
+#       cli:
+#         url: "{{ nextcloud_urls[0] | regex_replace(':[0-9]{2,5}', '') }}"
+#     trusted_domains: "{{ nextcloud_trusted_domains | list }}"
+#     htaccess:
+#       RewriteBase: >-
+#         /{{ nextcloud_urls[0]
+#           | regex_replace('/$', '')
+#           | urlsplit('path')
+#           | regex_replace('^/')
+#         }}
+# ```
+
+# List of trusted domain names ('localhost' is always added)
+nextcloud_trusted_domains: []
 
 # Configure the Apache2 php.ini automatically?
 nextcloud_apache_php: yes
