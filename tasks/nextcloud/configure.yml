@@ -96,9 +96,12 @@
       become_user: "{{ nextcloud_http_user }}"
       register: result
       changed_when: result is success
-      notify: "restart {{ nextcloud_php_server }}"
+      # TODO: we should switch to an htaccess handler as well
+      # notify: nextcloud update htaccess
       failed_when: (result.stdout is not search('successfully imported')
         or result is failed)
+
+    # - meta: flush_handlers
 
     - name: "Nextcloud configure: delete temporary config files"
       file:

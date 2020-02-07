@@ -33,7 +33,6 @@
       --no-warnings
   args:
     chdir: "{{ nextcloud_dl_tmp_dir }}/nextcloud"
-  notify: "restart {{ nextcloud_php_server }}"
 
 - name: "Nextcloud upgrade: unset maintenance mode via occ commandline"
   become: true
@@ -41,4 +40,3 @@
   command: php occ maintenance:mode --off
   args:
     chdir: "{{ nextcloud_dl_tmp_dir }}/nextcloud"
-  notify: "restart {{ nextcloud_php_server }}"

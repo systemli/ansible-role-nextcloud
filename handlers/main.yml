@@ -1,6 +1,19 @@
 ---
 
-- name: "restart {{ nextcloud_php_server }}"
+- name: test and reload apache2
+  command: apache2ctl configtest
+  notify: reload apache2
+
+- name: test and restart apache2
+  command: apache2ctl configtest
+  notify: restart apache2
+
+- name: reload apache2
   service:
-    name: "{{ nextcloud_php_server }}"
+    name: apache2
+    state: reloaded
+
+- name: restart apache2
+  service:
+    name: apache2
     state: restarted
