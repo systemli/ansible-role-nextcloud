@@ -54,11 +54,6 @@
   tags:
     - role:nextcloud:install
 
-- name: configure Nextcloud
-  include: nextcloud/configure.yml
-  tags:
-    - role:nextcloud:configure
-
 - name: backup Nextcloud
   include: nextcloud/backup.yml
   when: nextcloud_backup|bool and nextcloud_reg_do_upgrade|bool
@@ -71,6 +66,11 @@
   when: nextcloud_reg_do_upgrade|bool
   tags:
     - role:nextcloud:upgrade
+
+- name: configure Nextcloud
+  include: nextcloud/configure.yml
+  tags:
+    - role:nextcloud:configure
 
 - name: finalize Nextcloud instance
   include: nextcloud/finalize.yml
