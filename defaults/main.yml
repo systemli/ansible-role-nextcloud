@@ -21,9 +21,9 @@ nextcloud_config:
     memcache.distributed: '\OC\Memcache\Redis'
     memcache.locking: '\OC\Memcache\Redis'
     # Copies the local skeleton directory to Nextcloud instance
-    #skeletondirectory: "{{ nextcloud_skeleton_dir }}"
+    # skeletondirectory: "example_skeleton"
     # Copies the config theme directory to Nextcloud instance
-    #theme: "{{ nextcloud_theme }}"
+    # theme: "example_theme"
     trusted_domains:
       - localhost
 # A yaml array with settings of nextcloud apps.
@@ -63,7 +63,7 @@ nextcloud_apache_php: yes
 nextcloud_php_version: "{{ '7.0' if ansible_distribution_major_version|int == 9 else '7.3' }}"
 # 'apache2' for libapache-mod2-php, 'php{{ nextcloud_php_version }}-fpm' for PHP FPM
 nextcloud_php_server: "apache2"
-#nextcloud_php_server: "php{{ nextcloud_php_version }}-fpm"
+# nextcloud_php_server: "php{{ nextcloud_php_version }}-fpm"
 
 # Set custom PHP file size limits
 nextcloud_php_settings:
