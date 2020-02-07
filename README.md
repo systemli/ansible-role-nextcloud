@@ -63,8 +63,13 @@ The following preliminaries need to be met:
 nextcloud_version: 18.0.0
 nextcloud_workdir: "/var/www/cloud.example.org/nextcloud"
 nextcloud_data_dir: "/srv/nextcloud/data"
-nextcloud_trusted_domains:
-  - cloud.example.org
+nextcloud_config:
+  system:
+    memcache.local: '\OC\Memcache\APCu'
+    memcache.distributed: '\OC\Memcache\Redis'
+    memcache.locking: '\OC\Memcache\Redis'
+    trusted_domains:
+      - cloud.example.org
 nextcloud_mysql_password: "******"
 nextcloud_admin_password: "******"
 

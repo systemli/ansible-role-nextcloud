@@ -17,7 +17,13 @@ nextcloud_data_dir: "/srv/nextcloud/data"
 # Nextcloud configuration
 nextcloud_config:
   system:
-    trusted_domains: "{{ nextcloud_trusted_domains | list }}"
+    memcache.local: '\OC\Memcache\APCu'
+    memcache.distributed: '\OC\Memcache\Redis'
+    memcache.locking: '\OC\Memcache\Redis'
+    #skeletondirector: "{{ nextcloud_skeleton_dir }}"
+    #theme: "{{ nextcloud_theme }}"
+    trusted_domains:
+      - localhost
 # A yaml array with settings of nextcloud apps.
 #
 # Nextcloud organizes its configuration in two categories:
@@ -49,8 +55,15 @@ nextcloud_config:
 #         }}
 # ```
 
-# List of trusted domain names ('localhost' is always added)
-nextcloud_trusted_domains: []
+# Copy a local skeleton directory to Nextcloud
+# NOTE: Don't forget to set `skeletondirector: {{ nextcloud_skeleton_dir }}`
+#       in `nextcloud_config.system`.
+#nextcloud_skeleton_dir:
+
+# Copy a config theme directory to Nextcloud
+# NOTE: Don't forget to set `theme: {{ nextcloud_theme }}` in
+#       `nextcloud_config.system`.
+#nextcloud_theme:
 
 # Configure the Apache2 php.ini automatically?
 nextcloud_apache_php: yes
