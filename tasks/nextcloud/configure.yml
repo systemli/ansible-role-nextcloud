@@ -7,22 +7,22 @@
 - name: "Nextcloud configure: copy skeleton directory"
   copy:
     src: "nextcloud/skeleton/"
-    dest: "{{ nextcloud_skeleton_dir }}"
+    dest: "{{ nextcloud_config.system.skeletondirectory }}"
     owner: "{{ nextcloud_http_user }}"
     group: "{{ nextcloud_http_group }}"
     mode: 0640
     drectory_mode: 0750
-  when: nextcloud_skeleton_dir is defined
+  when: nextcloud_config.system.skeletondirectory is defined
 
 - name: "Nextcloud configure: copy theme"
   copy:
-    src: "nextcloud/themes/{{ nextcloud_theme }}"
+    src: "nextcloud/themes/{{ nextcloud_config.system.theme }}"
     dest: "{{ __nextcloud_install_dir }}/themes/"
     owner: "{{ nextcloud_http_user }}"
     group: "{{ nextcloud_http_group }}"
     mode: 0640
     directory_mode: 0750
-  when: nextcloud_theme is defined
+  when: nextcloud_config.system.theme is defined
 
 - name: "Nextcloud configure: get global preferences"
   command: php occ config:list --private --output=json
