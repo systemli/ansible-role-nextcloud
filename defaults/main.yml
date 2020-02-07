@@ -69,6 +69,9 @@ nextcloud_config:
 nextcloud_apache_php: yes
 
 nextcloud_php_version: "{{ '7.0' if ansible_distribution_major_version|int == 9 else '7.3' }}"
+# 'apache2' for libapache-mod2-php, 'php{{ nextcloud_php_version }}-fpm' for PHP FPM
+nextcloud_php_server: "apache2"
+#nextcloud_php_server: "php{{ nextcloud_php_version }}-fpm"
 
 # Set custom PHP file size limits
 nextcloud_php_settings:

@@ -24,3 +24,4 @@
   args:
     chdir: "{{ nextcloud_dl_tmp_dir }}/nextcloud"
     creates: "{{ nextcloud_dl_tmp_dir }}/nextcloud/config/config.php"
+  notify: "restart {{ nextcloud_php_server }}"

@@ -7,7 +7,7 @@
     owner: root
     group: root
     mode: 0644
-  notify: test and restart apache2
+  notify: "restart {{ nextcloud_php_server }}"
 
 - name: Check which PHP variables are set in .htaccess
   command: 'grep -Eq "php_value\s+{{ item.key }}" {{ nextcloud_webroot }}/.htaccess'
