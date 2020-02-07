@@ -86,7 +86,7 @@
         owner: "{{ nextcloud_http_user }}"
         group: "{{ nextcloud_http_group }}"
         mode: 0o400
-      check_mode: False
+      check_mode: True
 
     - name: "Nextcloud configure: set up global preferences"
       command: php occ config:import "{{ __nextcloud_preferences.path }}"
@@ -97,11 +97,11 @@
       register: result
       changed_when: result is success
       # TODO: we should switch to an htaccess handler as well
-      notify: nextcloud update htaccess
+      #notify: nextcloud update htaccess
       failed_when: (result.stdout is not search('successfully imported')
         or result is failed)
 
-    - meta: flush_handlers
+    #- meta: flush_handlers
 
     - name: "Nextcloud configure: delete temporary config files"
       file:
