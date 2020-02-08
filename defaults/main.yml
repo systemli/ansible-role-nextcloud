@@ -18,8 +18,11 @@ nextcloud_data_dir: "/srv/nextcloud/data"
 nextcloud_config:
   system:
     memcache.local: '\OC\Memcache\APCu'
-    memcache.distributed: '\OC\Memcache\Redis'
-    memcache.locking: '\OC\Memcache\Redis'
+    # memcache.distributed: '\OC\Memcache\Redis'
+    # memcache.locking: '\OC\Memcache\Redis'
+    # redis:
+    #   host: localhost
+    #   port: 6379
     # Copies the local skeleton directory to Nextcloud instance
     # skeletondirectory: "example_skeleton"
     # Copies the config theme directory to Nextcloud instance
