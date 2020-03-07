@@ -112,3 +112,15 @@
         - "{{ __nextcloud_preferences_diff.path }}"
       check_mode: False
   when: __nextcloud_updated_preferences != __nextcloud_old_preferences
+
+- name: "Run additional configuration commands"
+  command: "{{ item }}"
+  args:
+    chdir: "{{ __nextcloud_install_dir }}"
+  become: True
+  become_user: "{{ nextcloud_http_user }}"
+  changed_when: False
+  with_items:
+    - "{{ nextcloud_configure_additional_commands }}"
+  when:
+    - nextcloud_configure_additional_commands

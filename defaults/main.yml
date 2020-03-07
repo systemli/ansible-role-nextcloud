@@ -141,3 +141,9 @@ nextcloud_dependencies: "{{ nextcloud_dependencies_general + nextcloud_dependenc
 nextcloud_dependencies_python:
   - python-mysqldb
   - python-semantic-version
+
+# Additional commands to run at the end of configure.yml
+# Example:
+# nextcloud_configure_additional_commands:
+#   - "php occ config:app:set files_sharing incoming_server2server_share_enabled --value=true --type=boolean"
+nextcloud_configure_additional_commands: []
