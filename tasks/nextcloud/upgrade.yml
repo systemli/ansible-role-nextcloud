@@ -33,6 +33,7 @@
       --no-warnings
   args:
     chdir: "{{ nextcloud_dl_tmp_dir }}/nextcloud"
+  notify: test and restart apache2
 
 - name: "Nextcloud upgrade: unset maintenance mode via occ commandline"
   become: true
