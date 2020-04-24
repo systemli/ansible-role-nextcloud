@@ -1,7 +1,7 @@
 ---
 
 # Nextcloud version to install. Raise for upgrading.
-nextcloud_version: "{{ '18.0.3' if ansible_distribution_release == 'buster' else '15.0.13' }}"
+nextcloud_version: "{{ '18.0.4' if ansible_distribution_release == 'buster' else '15.0.13' }}"
 
 # Path to the Nextcloud workdir holding Nextcloud instances
 nextcloud_workdir: "/var/www/nextcloud"
