@@ -4,6 +4,7 @@
   mysql_db:
     name: "{{ nextcloud_mysql_db }}"
     state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
   delegate_to: "{{ nextcloud_mysql_host_delegate }}"
   register: nextcloud_reg_database_status
 
@@ -14,4 +15,5 @@
     password: "{{ nextcloud_mysql_password }}"
     priv: "{{ nextcloud_mysql_db }}.*:ALL"
     state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
   delegate_to: "{{ nextcloud_mysql_host_delegate }}"
