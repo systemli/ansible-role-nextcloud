@@ -229,7 +229,10 @@ def app_store_fetch_json(module, url):
             fd.close()
 
     try:
-        store_json = module.from_json(content.decode('utf8'))
+        if isinstance(content, str):
+            store_json = module.from_json(content)
+        else:
+            store_json = module.from_json(content.decode('utf8'))
     except ValueError:
         module.fail_json(msg="Failed to parse URL {0} content: {1}".format(url, content))
 
