@@ -1,14 +1,5 @@
 ---
 
-- name: copy PHP opcache include config
-  template:
-    src: php/apache2/conf.d/nextcloud-opcache.ini
-    dest: "/etc/php/{{ nextcloud_php_version }}/apache2/conf.d/nextcloud-opcache.ini"
-    owner: root
-    group: root
-    mode: 0644
-  notify: test and restart apache2
-
 - name: Check which PHP variables are set in .htaccess
   command: 'grep -Eq "php_value\s+{{ item.key }}" {{ nextcloud_webroot }}/.htaccess'
   with_dict: "{{ nextcloud_php_settings|d({}) }}"
