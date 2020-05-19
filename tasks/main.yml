@@ -88,6 +88,10 @@
     state: "{{ nextcloud_apps_upgrade|ternary('latest', 'enabled') }}"
   loop_control:
     loop_var: nextcloud_item
+  register: _app_installed
+  retries: 3
+  delay: 3
+  until: _app_installed is not failed
   with_items: "{{ nextcloud_apps }}"
   tags:
     - role:nextcloud:install
