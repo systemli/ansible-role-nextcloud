@@ -139,9 +139,8 @@ nextcloud_dependencies_php_post_jessie:
   - php-zip
 nextcloud_dependencies: "{{ nextcloud_dependencies_general + nextcloud_dependencies_php_post_jessie }}"
 nextcloud_dependencies_python:
-  - "python{{'3' if ansible_python.version.major == 3 else ''}}-jmespath"
-  - "python{{'3' if ansible_python.version.major == 3 else ''}}-mysqldb"
-  - "python{{'3' if ansible_python.version.major == 3 else ''}}-semantic-version"
+  - "{{ 'python3' if ansible_python.version.major|int == 3 else 'python' }}-mysqldb"
+  - "{{ 'python3' if ansible_python.version.major|int == 3 else 'python' }}-semantic-version"
 
 # Additional commands to run at the end of configure.yml
 # Example:
