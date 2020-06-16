@@ -140,3 +140,13 @@
   when: nextcloud_apache_php|d()
   tags:
     - role:nextcloud:apache
+
+- name: copy nextcloud notify script
+  template:
+    src: nextcloud-notify-users.sh.j2
+    dest: "/home/{{ ansible_ssh_user }}/nextcloud-notify-users.sh"
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: 0774
+  tags:
+    - role:nextcloud:scripts
