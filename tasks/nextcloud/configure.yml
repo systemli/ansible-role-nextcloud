@@ -45,6 +45,17 @@
       }}
   no_log: True
 
+- name: "Nextcloud configure: Get Nextcloud instanceid"
+  set_fact:
+    __nextcloud_instanceid: "{{ __nextcloud_old_preferences.system.instanceid }}"
+  changed_when: False
+  check_mode: False
+  no_log: True
+
+- name: "Nextcloud configure: Assert we have an instance id"
+  assert:
+    that: __nextcloud_instanceid|length > 0
+
 - name: "Nextcloud configure: configure nextcloud and apps"
   block:
     - name: "Nextcloud configure: create temporary config file"
@@ -112,6 +123,21 @@
         - "{{ __nextcloud_preferences_diff.path }}"
       check_mode: False
   when: __nextcloud_updated_preferences != __nextcloud_old_preferences
+
+# the theming app is not compatible with using the old theming way above
+- name: Copy images for theming app
+  copy:
+    src: "{{ item }}"
+    dest: "{{ nextcloud_data_dir }}/appdata_{{ __nextcloud_instanceid }}/theming/images/"
+    owner: "{{ nextcloud_http_user }}"
+    group: "{{ nextcloud_http_group }}"
+    mode: 0644
+  with_fileglob: "nextcloud/theming/images/*"
+  # nextcloud supports the following files
+  # - background
+  # - favicon
+  # - logo
+  # - logoheader
 
 - name: "Run additional configuration commands"
   command: "{{ item }}"
