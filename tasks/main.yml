@@ -148,5 +148,6 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: 0774
+  when: ansible_user is defined  # doesn't exist in testing
   tags:
     - role:nextcloud:scripts
