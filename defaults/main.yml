@@ -124,6 +124,7 @@ nextcloud_dependencies_general:
   - php-pear
 nextcloud_dependencies_php_post_jessie:
   - php-apcu
+  - php-bcmath
   - php-bz2
   - php-curl
   - php-gd
