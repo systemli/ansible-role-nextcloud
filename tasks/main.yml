@@ -155,6 +155,6 @@
     owner: "{{ ansible_user }}"
     group: "{{ __user.group }}"
     mode: 0774
-  when: __user.home is defined
+  when: __user is defined
   tags:
     - role:nextcloud:scripts
