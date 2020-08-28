@@ -3,7 +3,7 @@
 - name: Check which PHP variables are set in .htaccess
   command: 'grep -Eq "php_value\s+{{ item.key }}" {{ nextcloud_webroot }}/.htaccess'
   with_dict: "{{ nextcloud_php_settings|d({}) }}"
-  register: nextcloud_reg_htaccess_vars
+  register: __nextcloud_htaccess_vars
   check_mode: False
   failed_when: False
   changed_when: False
@@ -13,7 +13,7 @@
     dest: "{{ nextcloud_webroot }}/.htaccess"
     regexp: '^(\s*)php_value\s+{{ item.key }}.*$'
     replace: '\1php_value {{ item.key }} {{ item.value }}'
-  with_items: "{{ nextcloud_reg_htaccess_vars|json_query(query) }}"
+  with_items: "{{ __nextcloud_htaccess_vars|json_query(query) }}"
   vars:
     query: "results[?rc == `0`].item"
 
@@ -22,7 +22,7 @@
     dest: "{{ nextcloud_webroot }}/.htaccess"
     regexp: '^(<IfModule mod_php.*)$'
     replace: '\1\n  php_value {{ item.key }} {{ item.value }}'
-  with_items: "{{ nextcloud_reg_htaccess_vars|json_query(query) }}"
+  with_items: "{{ __nextcloud_htaccess_vars|json_query(query) }}"
   vars:
     query: "results[?rc == `1`].item"
 

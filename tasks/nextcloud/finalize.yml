@@ -5,12 +5,12 @@
     path: "{{ nextcloud_instance }}"
     state: directory
     mode: 0755
-  register: nextcloud_instance_created
+  register: __nextcloud_instance_created
 
 - name: "Nextcloud finalize: assert that Nextcloud instance webroot didn't exist"
   assert:
     that:
-      - nextcloud_instance_created.changed
+      - __nextcloud_instance_created.changed
     msg: "Error: Nextcloud instance webroot already existed: {{ nextcloud_instance }}"
 
 - name: "Nextcloud finalize: move new Nextcloud to nextcloud_instance"

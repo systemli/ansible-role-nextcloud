@@ -30,8 +30,8 @@
 - name: "Nextcloud backup: Verify backup"
   stat:
     path: "{{ nextcloud_backup_item }}"
-  register: nextcloud_reg_backup_size
-  failed_when: nextcloud_reg_backup_size.stat.size is undefined or nextcloud_reg_backup_size.stat.size <= 10
+  register: __nextcloud_backup_size
+  failed_when: __nextcloud_backup_size.stat.size is undefined or __nextcloud_backup_size.stat.size <= 10
   loop_control:
     loop_var: nextcloud_backup_item
   with_items:

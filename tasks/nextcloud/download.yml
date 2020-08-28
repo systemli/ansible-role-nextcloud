@@ -49,10 +49,10 @@
 - name: "Nextcloud download: check if new version has been downloaded"
   stat:
     path: "{{ nextcloud_dl_tmp_dir }}/nextcloud/version.php"
-  register: nextcloud_reg_dl_post
+  register: __nextcloud_dl_post
 
 - name: "Nextcloud download: assert that new Nextcloud version got fetched"
   assert:
     that:
-      - nextcloud_reg_dl_post.stat.exists
+      - __nextcloud_dl_post.stat.exists
     msg: "Error: Failed to fetch new Nextcloud version"

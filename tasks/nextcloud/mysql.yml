@@ -6,7 +6,6 @@
     state: present
     login_unix_socket: /run/mysqld/mysqld.sock
   delegate_to: "{{ nextcloud_mysql_host_delegate }}"
-  register: nextcloud_reg_database_status
 
 - name: create Nextcloud MySQL database user
   mysql_user:

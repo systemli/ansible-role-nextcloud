@@ -36,7 +36,7 @@
 
 - name: download new Nextcloud version if required
   include: nextcloud/download.yml
-  when: nextcloud_reg_do_install|bool or nextcloud_reg_do_upgrade|bool
+  when: __nextcloud_do_install|bool or __nextcloud_do_upgrade|bool
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade
@@ -50,20 +50,20 @@
 
 - name: install Nextcloud
   include: nextcloud/install.yml
-  when: nextcloud_reg_do_install|bool and not nextcloud_reg_config.stat.exists
+  when: __nextcloud_do_install|bool and not __nextcloud_config.stat.exists
   tags:
     - role:nextcloud:install
 
 - name: backup Nextcloud
   include: nextcloud/backup.yml
-  when: nextcloud_backup|bool and nextcloud_reg_do_upgrade|bool
+  when: nextcloud_backup|bool and __nextcloud_do_upgrade|bool
   tags:
     - role:nextcloud:upgrade
     - role:nextcloud:backup
 
 - name: upgrade Nextcloud
   include: nextcloud/upgrade.yml
-  when: nextcloud_reg_do_upgrade|bool
+  when: __nextcloud_do_upgrade|bool
   tags:
     - role:nextcloud:upgrade
 
@@ -74,7 +74,7 @@
 
 - name: finalize Nextcloud instance
   include: nextcloud/finalize.yml
-  when: nextcloud_reg_do_install|bool or nextcloud_reg_do_upgrade|bool
+  when: __nextcloud_do_install|bool or __nextcloud_do_upgrade|bool
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade
@@ -88,10 +88,10 @@
     state: "{{ nextcloud_apps_upgrade|ternary('latest', 'enabled') }}"
   loop_control:
     loop_var: nextcloud_item
-  register: _app_installed
+  register: __nextcloud_app_installed
   retries: 3
   delay: 3
-  until: _app_installed is not failed
+  until: __nextcloud_app_installed is not failed
   with_items: "{{ nextcloud_apps }}"
   tags:
     - role:nextcloud:install
@@ -122,7 +122,7 @@
     user: "{{ nextcloud_http_user }}"
     job: "php -f {{ nextcloud_instance }}/cron.php"
     cron_file: nextcloud
-  when: nextcloud_reg_do_install|bool or nextcloud_reg_do_upgrade|bool
+  when: __nextcloud_do_install|bool or __nextcloud_do_upgrade|bool
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade
@@ -131,7 +131,7 @@
   template:
     src: nextcloud/nextcloud.logrotate.j2
     dest: /etc/logrotate.d/nextcloud
-  when: nextcloud_reg_do_install|bool or nextcloud_reg_do_upgrade|bool
+  when: __nextcloud_do_install|bool or __nextcloud_do_upgrade|bool
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade
@@ -145,7 +145,7 @@
   user:
     name: "{{ ansible_user }}"
   check_mode: true
-  register: __user
+  register: __nextcloud_ansible_user
   when: ansible_user is defined  # doesn't exist in testing
 
 - name: copy nextcloud notify script
@@ -155,6 +155,6 @@
     owner: "{{ ansible_user }}"
     group: "{{ __user.group }}"
     mode: 0774
-  when: __user is defined
+  when: __nextcloud_ansible_user is defined
   tags:
     - role:nextcloud:scripts

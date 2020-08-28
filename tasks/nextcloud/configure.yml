@@ -2,7 +2,7 @@
 
 - name: "Nextcloud configure: set Nextcloud directory"
   set_fact:
-    __nextcloud_install_dir: "{{ nextcloud_dl_tmp_dir + '/nextcloud' if (nextcloud_reg_do_install|bool or nextcloud_reg_do_upgrade|bool) else nextcloud_instance }}"
+    __nextcloud_install_dir: "{{ nextcloud_dl_tmp_dir + '/nextcloud' if (__nextcloud_do_install|bool or __nextcloud_do_upgrade|bool) else nextcloud_instance }}"
 
 - name: "Nextcloud configure: copy skeleton directory"
   copy:
@@ -105,12 +105,12 @@
         chdir: "{{ __nextcloud_install_dir }}"
       become: True
       become_user: "{{ nextcloud_http_user }}"
-      register: result
-      changed_when: result is success
+      register: __nextcloud_result
+      changed_when: __nextcloud_result is success
       # TODO: we should switch to an htaccess handler as well
       # notify: nextcloud update htaccess
-      failed_when: (result.stdout is not search('successfully imported')
-        or result is failed)
+      failed_when: (__nextcloud_result.stdout is not search('successfully imported')
+        or __nextcloud_result is failed)
 
     # - meta: flush_handlers
 
