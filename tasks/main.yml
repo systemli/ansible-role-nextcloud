@@ -141,20 +141,12 @@
   tags:
     - role:nextcloud:apache
 
-- name: get data of ansible_user
-  user:
-    name: "{{ ansible_user }}"
-  check_mode: true
-  register: __nextcloud_ansible_user
-  when: ansible_user is defined  # doesn't exist in testing
-
 - name: copy nextcloud notify script
   template:
     src: nextcloud-notify-users.sh.j2
-    dest: "{{ __user.home }}/nextcloud-notify-users.sh"
-    owner: "{{ ansible_user }}"
-    group: "{{ __user.group }}"
-    mode: 0774
-  when: __nextcloud_ansible_user is defined
+    dest: /usr/local/bin
+    owner: root
+    group: root
+    mode: 0755
   tags:
     - role:nextcloud:scripts
