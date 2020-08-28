@@ -144,7 +144,7 @@
 - name: copy nextcloud notify script
   template:
     src: nextcloud-notify-users.sh.j2
-    dest: /usr/local/bin
+    dest: /usr/local/bin/nextcloud-notify-users.sh
     owner: root
     group: root
     mode: 0755
