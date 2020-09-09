@@ -60,7 +60,6 @@ The following preliminaries need to be met:
 ```
 # Nextcloud settings
 
-nextcloud_version: 18.0.6
 nextcloud_workdir: "/var/www/cloud.example.org/nextcloud"
 nextcloud_data_dir: "/srv/nextcloud/data"
 nextcloud_config:
