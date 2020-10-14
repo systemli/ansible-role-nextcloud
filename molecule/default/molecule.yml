@@ -8,8 +8,6 @@ driver:
 platforms:
   - name: nextcloud-buster64
     box: debian/buster64
-  - name: nextcloud-stretch64
-    box: debian/stretch64
 provisioner:
   name: ansible
   side_effect: side_effect.yml
