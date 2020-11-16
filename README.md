@@ -1,5 +1,6 @@
 # Ansible role to install and maintain Nextcloud setups
 
+[![Build Status](https://github.com/systemli/ansible-role-nextcloud/workflows/Molecule/badge.svg?branch=master)](https://github.com/systemli/ansible-role-nextcloud/actions?query=workflow%3AMolecule)
 [![Ansible Galaxy](http://img.shields.io/badge/ansible--galaxy-nextcloud-blue.svg)](https://galaxy.ansible.com/systemli/nextcloud/) [![Build Status](https://travis-ci.org/systemli/ansible-role-nextcloud.svg?branch=master)](https://travis-ci.org/systemli/ansible-role-nextcloud)
 
 This role is meant to deploy and upgrade Nextcloud instances to Debian
@@ -108,6 +109,21 @@ nextcloud_apps:
 
 To upgrade a Nextcloud instance, it's sufficient to bump the version
 in Role variable `nextcloud_version` and run the role again.
+
+# Testing & Development
+
+## Tests
+
+For developing and testing the role we use Github Actions, Molecule, and Vagrant. On the local environment you can easily test the role with
+
+Run local tests with:
+
+```
+molecule test 
+```
+
+Requires Molecule, Vagrant and `python-vagrant` to be installed.
+
 
 # License
 
