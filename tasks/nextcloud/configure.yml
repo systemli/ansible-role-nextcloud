@@ -132,7 +132,9 @@
     owner: "{{ nextcloud_http_user }}"
     group: "{{ nextcloud_http_group }}"
     mode: 0644
-  with_fileglob: "nextcloud/theming/images/*"
+  with_fileglob:
+    - "nextcloud/theming/images/{{ ansible_fqdn }}/*"
+    - "nextcloud/theming/images/*"
   # nextcloud supports the following files
   # - background
   # - favicon
