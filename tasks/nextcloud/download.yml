@@ -15,7 +15,7 @@
 - block:
     - name: "Nextcloud download: fetch version tarball and signature"
       get_url:
-        dest: "{{ nextcloud_dl_tmp_dir }}"
+        dest: "{{ nextcloud_dl_tmp_dir }}/{{ nextcloud_tar_url | basename }}"
         url: "{{ item }}"
       with_items:
         - "{{ nextcloud_tar_url }}"
