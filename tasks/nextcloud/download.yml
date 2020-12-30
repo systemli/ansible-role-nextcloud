@@ -31,6 +31,10 @@
         gpgv --keyring ./{{ nextcloud_gpg_key }}.gpg
         {{ nextcloud_sig_url | basename }}
         {{ nextcloud_tar_url | basename }}
+    - name: "Nextcloud download: ensure sane state before extracting tarball"
+      file:
+        path: "{{ nextcloud_dl_tmp_dir }}/nextcloud"
+        state: absent
     - name: "Nextcloud download: extract tarball"
       unarchive:
         dest: "{{ nextcloud_dl_tmp_dir }}"
