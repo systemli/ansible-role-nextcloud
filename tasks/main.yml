@@ -27,6 +27,14 @@
     - role:nextcloud:backup
     - role:nextcloud:apps
 
+- name: create /var/www/.ansible if missing
+  file:
+    path: "/var/www/.ansible/tmp"
+    state: directory
+    owner: "{{ nextcloud_http_user }}"
+    group: "{{ nextcloud_http_group }}"
+    mode: 0750
+
 - name: copy over Nextcloud maintenance page
   include: nextcloud/maintenance-page.yml
   tags:
@@ -150,3 +158,8 @@
     mode: 0755
   tags:
     - role:nextcloud:scripts
+
+- name: ensure /var/www/.ansible is deleted
+  file:
+    path: "/var/www/.ansible"
+    state: absent
