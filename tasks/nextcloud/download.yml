@@ -17,6 +17,7 @@
       get_url:
         dest: "{{ nextcloud_dl_tmp_dir }}/{{ item | basename }}"
         url: "{{ item }}"
+        mode: 0600
       with_items:
         - "{{ nextcloud_tar_url }}"
         - "{{ nextcloud_sig_url }}"
@@ -24,6 +25,7 @@
       copy:
         dest: "{{ nextcloud_dl_tmp_dir }}"
         src: "{{ nextcloud_gpg_key }}.gpg"
+        mode: 0600
     - name: "Nextcloud download: verify signature of tarball"
       args:
         chdir: "{{ nextcloud_dl_tmp_dir }}"
