@@ -28,7 +28,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install test dependencies.
-        run: pip3 install ansible-lint molecule[docker] molecule-goss yamllint jmespath
+        run: pip3 install ansible-lint molecule[docker] molecule-goss yamllint
       # See: https://github.com/geerlingguy/ansible-role-mysql/issues/422
       - name: Disable AppArmor on Debian.
         run: |
