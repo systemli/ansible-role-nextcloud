@@ -156,8 +156,11 @@ nextcloud_notify_push: False
 nextcloud_notify_push_version: "latest"
 nextcloud_notify_push_url: "https://github.com/nextcloud/notify_push/releases/download/v{{ nextcloud_notify_push_version }}/notify_push-x86_64-unknown-linux-musl"
 
-# Enable to expose metrics
-# nextcloud_notify_push_metrics_port: 7868
+# Uncomment to bind Nextcloud notify_push daemon to localhost
+# nextcloud_notify_push_bind: 127.0.0.1
 
 # Port for the Nextcloud notify_push daemon
 nextcloud_notify_push_port: 7867
+
+# Uncomment to expose Nextcloud notify_push metrics
+# nextcloud_notify_push_metrics_port: 7868
