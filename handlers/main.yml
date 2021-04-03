@@ -17,3 +17,9 @@
   service:
     name: apache2
     state: restarted
+
+
+- name: restart nextcloud-notify-push
+  service:
+    name: nextcloud-notify-push
+    state: restarted

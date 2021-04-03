@@ -115,6 +115,15 @@
     - role:nextcloud:upgrade
     - role:nextcloud:apps
 
+- name: setup Nextcloud push notification daemon
+  include: nextcloud/notify-push.yml
+  when: nextcloud_notify_push
+  tags:
+    - role:nextcloud:install
+    - role:nextcloud:upgrade
+    - role:nextcloud:apps
+    - role:nextcloud:notify-push
+
 - name: create Nextcloud cronjob
   cron:
     name: "Nextcloud cronjob"

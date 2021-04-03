@@ -1,0 +1,11 @@
+[Unit]
+Description = Push daemon for Nextcloud clients
+
+[Service]
+Environment = BIND=127.0.0.1 PORT={{ nextcloud_notify_push_port }} {% if nextcloud_notify_push_metrics_port|default(False) %}METRICS_PORT={{ nextcloud_notify_push_metrics_port }}{% endif %}
+
+ExecStart = /usr/local/bin/notify_push {{ nextcloud_instance }}/config/config.php
+User={{ nextcloud_http_user }}
+
+[Install]
+WantedBy = multi-user.target

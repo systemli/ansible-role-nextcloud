@@ -73,8 +73,12 @@ nextcloud_config:
       port: 6379
     trusted_domains:
       - cloud.example.org
+  apps:
+    notify_push:
+      base_endpoint: "https://cloud.example.org/push"
 nextcloud_mysql_password: "******"
 nextcloud_admin_password: "******"
+nextcloud_notify_push: True
 
 nextcloud_apps:
   - admin_audit
@@ -103,12 +107,37 @@ nextcloud_apps:
 		SetEnv HOME {{ nextcloud_webroot }}
 		SetEnv HTTP_HOME {{ nextcloud_webroot }}
 	</Directory>
+
+    # Proxy rules for the Nextcloud notify_push daemon
+    ProxyPass /push/ws ws://127.0.0.1:7867/ws
+    ProxyPass /push/ http://127.0.0.1:7867/
+    ProxyPassReverse /push/ http://127.0.0.1:7867/
 ```
 
 # Upgrading Nextcloud
 
 To upgrade a Nextcloud instance, it's sufficient to bump the version
 in Role variable `nextcloud_version` and run the role again.
+
+# Notification push daemon support
+
+When `nextcloud_notify_push` is enabled, the [Nextcloud notify_push
+daemon](https://github.com/nextcloud/notify_push) will be installed, configured
+and enabled.
+
+Please beware that further configuration might be needed:
+* Redis needs to be configured for caching.
+* Configure your webserver as reverse proxy. See the [upstream
+  documentation](https://github.com/nextcloud/notify_push#reverse-proxy)
+  for details.
+* Set `base_endpoint` for the `notify_push` app accordingly:
+  ```
+  nextcloud_config:
+  [...]
+    apps:
+      notify_push:
+        base_endpoint: "https://cloud.example.org/push"
+  ```
 
 # Testing & Development
 
@@ -123,7 +152,6 @@ molecule test
 ```
 
 Requires Molecule, Vagrant and `python-vagrant` to be installed.
-
 
 # License
 
