@@ -33,6 +33,7 @@
   - name: enable Nextcloud notify_push daemon systemd service
     service:
       name: nextcloud-notify-push
+      state: started
       enabled: yes
 
   - name: install and enable Nextcloud app notify_push
@@ -42,9 +43,6 @@
       name: notify_push
       nextcloud_path: "{{ nextcloud_instance }}"
       state: "{{ nextcloud_apps_upgrade|ternary('latest', 'enabled') }}"
-
-  - name: flush handlers
-    meta: flush_handlers
 
   - name: test Nextcloud notify_push functionality
     become: true
