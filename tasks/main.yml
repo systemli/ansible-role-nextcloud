@@ -16,6 +16,10 @@
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
+- include: php.yml
+  tags:
+    - role:nextcloud:php
+
 - name: gather Nextcloud instance facts
   include: nextcloud/gather-facts.yml
   tags:
