@@ -16,12 +16,12 @@
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
-- include: php.yml
+- include_tasks: php.yml
   tags:
     - role:nextcloud:php
 
 - name: gather Nextcloud instance facts
-  include: nextcloud/gather-facts.yml
+  include_tasks: nextcloud/gather-facts.yml
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade
@@ -32,52 +32,52 @@
     - role:nextcloud:apps
 
 - name: copy over Nextcloud maintenance page
-  include: nextcloud/maintenance-page.yml
+  include_tasks: nextcloud/maintenance-page.yml
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade
     - role:nextcloud:maintenance-page
 
 - name: download new Nextcloud version if required
-  include: nextcloud/download.yml
+  include_tasks: nextcloud/download.yml
   when: __nextcloud_do_install|bool or __nextcloud_do_upgrade|bool
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
 - name: setup Nextcloud MySQL database
-  include: nextcloud/mysql.yml
+  include_tasks: nextcloud/mysql.yml
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade
     - role:nextcloud:database
 
 - name: install Nextcloud
-  include: nextcloud/install.yml
+  include_tasks: nextcloud/install.yml
   when: __nextcloud_do_install|bool and not __nextcloud_config.stat.exists
   tags:
     - role:nextcloud:install
 
 - name: backup Nextcloud
-  include: nextcloud/backup.yml
+  include_tasks: nextcloud/backup.yml
   when: nextcloud_backup|bool and __nextcloud_do_upgrade|bool
   tags:
     - role:nextcloud:upgrade
     - role:nextcloud:backup
 
 - name: upgrade Nextcloud
-  include: nextcloud/upgrade.yml
+  include_tasks: nextcloud/upgrade.yml
   when: __nextcloud_do_upgrade|bool
   tags:
     - role:nextcloud:upgrade
 
 - name: configure Nextcloud
-  include: nextcloud/configure.yml
+  include_tasks: nextcloud/configure.yml
   tags:
     - role:nextcloud:configure
 
 - name: finalize Nextcloud instance
-  include: nextcloud/finalize.yml
+  include_tasks: nextcloud/finalize.yml
   when: __nextcloud_do_install|bool or __nextcloud_do_upgrade|bool
   tags:
     - role:nextcloud:install
@@ -120,7 +120,7 @@
     - role:nextcloud:apps
 
 - name: setup Nextcloud push notification daemon
-  include: nextcloud/notify-push.yml
+  include_tasks: nextcloud/notify-push.yml
   when: nextcloud_notify_push
   tags:
     - role:nextcloud:install
@@ -149,7 +149,7 @@
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
-- include: apache-php.yml
+- include_tasks: apache-php.yml
   when: nextcloud_apache_php|d()
   tags:
     - role:nextcloud:apache
