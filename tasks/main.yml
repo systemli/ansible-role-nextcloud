@@ -131,7 +131,7 @@
 - name: create Nextcloud cronjob
   cron:
     name: "Nextcloud cronjob"
-    minute: "*/15"
+    minute: "*/5"
     user: "{{ nextcloud_http_user }}"
     job: "php -f {{ nextcloud_instance }}/cron.php"
     cron_file: nextcloud
