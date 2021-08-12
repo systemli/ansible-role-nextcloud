@@ -135,7 +135,6 @@
     user: "{{ nextcloud_http_user }}"
     job: "php -f {{ nextcloud_instance }}/cron.php"
     cron_file: nextcloud
-  when: __nextcloud_do_install|bool or __nextcloud_do_upgrade|bool
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade
