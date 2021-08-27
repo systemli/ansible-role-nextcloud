@@ -1,7 +1,4 @@
 ---
-scenario:
-  name: docker
-
 dependency:
   name: galaxy
   options:
@@ -9,6 +6,10 @@ dependency:
     force: false
 driver:
   name: docker
+lint: |
+  set -e
+  yamllint .
+#  ansible-lint
 platforms:
   - name: instance
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian10}-ansible:latest"
@@ -19,9 +20,6 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
-  side_effect: ../default/side_effect.yml
-  lint:
-    name: ansible-lint
-    enabled: False
   playbooks:
-    converge: ../default/playbook.yml
+    converge: ../default/converge.yml
+    side_effect: ../default/side_effect.yml
