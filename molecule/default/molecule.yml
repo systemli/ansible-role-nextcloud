@@ -4,6 +4,8 @@ driver:
   provider:
     name: virtualbox
 platforms:
+  - name: nextcloud-bullseye64
+    box: debian/bullseye64
   - name: nextcloud-buster64
     box: debian/buster64
 lint: |

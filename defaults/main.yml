@@ -63,7 +63,7 @@ nextcloud_config:
 # Configure the Apache2 php.ini automatically?
 nextcloud_apache_php: yes
 
-nextcloud_php_version: "{{ '7.0' if ansible_distribution_major_version|int == 9 else '7.3' }}"
+nextcloud_php_version: "{% if ansible_distribution_major_version|int == 10 %}7.3{% else %}7.4{% endif %}"
 
 # Set custom PHP file size limits
 nextcloud_php_settings:
@@ -136,9 +136,9 @@ nextcloud_dependencies_php_post_jessie:
   - php-ldap
   - php-mbstring
   - php-mysql
-  - php-smbclient
   - php-xml
   - php-zip
+
 nextcloud_dependencies: "{{ nextcloud_dependencies_general + nextcloud_dependencies_php_post_jessie }}"
 nextcloud_dependencies_python:
   - "{{ 'python3' if ansible_python.version.major|int == 3 else 'python' }}-mysqldb"
