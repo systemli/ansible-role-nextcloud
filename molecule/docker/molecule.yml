@@ -23,4 +23,3 @@ provisioner:
   playbooks:
     converge: ../default/converge.yml
     prepare: ../default/prepare.yml
-    side_effect: ../default/side_effect.yml

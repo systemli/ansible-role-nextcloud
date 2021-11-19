@@ -12,6 +12,3 @@ lint: |
   set -e
   yamllint .
 #  ansible-lint
-provisioner:
-  name: ansible
-  side_effect: side_effect.yml
