@@ -40,7 +40,9 @@
 
 - name: "Nextcloud facts: determine whether installation or upgrade"
   set_fact:
-    __nextcloud_do_upgrade: "{{ ((not __nextcloud_do_install) and __nextcloud_version|d() and __nextcloud_version != nextcloud_version)|ternary('yes', 'no') }}"
+    __nextcloud_do_upgrade: "{{ ((not __nextcloud_do_install)
+        and __nextcloud_version|d()
+        and nextcloud_version is version(__nextcloud_version, '>'))|ternary('yes', 'no') }}"
 
 - name: "Nextcloud facts: determine if config.php exists"
   stat:
