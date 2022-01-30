@@ -1,6 +1,6 @@
 # Ansible role to install and maintain Nextcloud setups
 
-[![Build Status](https://github.com/systemli/ansible-role-nextcloud/workflows/Integration/badge.svg?branch=master)](https://github.com/systemli/ansible-role-nextcloud/actions?query=workflow%3AIntegration)
+[![Build Status](https://github.com/systemli/ansible-role-nextcloud/workflows/Integration/badge.svg?branch=main)](https://github.com/systemli/ansible-role-nextcloud/actions?query=workflow%3AIntegration)
 [![Ansible Galaxy](http://img.shields.io/badge/ansible--galaxy-nextcloud-blue.svg)](https://galaxy.ansible.com/systemli/nextcloud/)
 
 This role is meant to deploy and upgrade Nextcloud instances to Debian
