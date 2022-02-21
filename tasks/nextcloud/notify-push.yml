@@ -34,6 +34,7 @@
     service:
       name: nextcloud-notify-push
       state: started
+      daemon_reload: yes
       enabled: yes
 
   - name: install and enable Nextcloud app notify_push
