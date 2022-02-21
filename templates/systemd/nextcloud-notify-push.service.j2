@@ -1,11 +1,15 @@
 [Unit]
-Description = Push daemon for Nextcloud clients
+Description=Push daemon for Nextcloud clients
+After=network-online.target
 
 [Service]
-Environment = {%if nextcloud_notify_push_bind|default(False) %}BIND={{ nextcloud_notify_push_bind }}{% endif %} PORT={{ nextcloud_notify_push_port }} {% if nextcloud_notify_push_metrics_port|default(False) %}METRICS_PORT={{ nextcloud_notify_push_metrics_port }}{% endif %}
+Environment={%if nextcloud_notify_push_bind|default(False) %}BIND={{ nextcloud_notify_push_bind }}{% endif %} PORT={{ nextcloud_notify_push_port }} {% if nextcloud_notify_push_metrics_port|default(False) %}METRICS_PORT={{ nextcloud_notify_push_metrics_port }}{% endif %}
 
-ExecStart = /usr/local/bin/notify_push {{ nextcloud_instance }}/config/config.php
+ExecStart=/usr/local/bin/notify_push {{ nextcloud_instance }}/config/config.php
 User={{ nextcloud_http_user }}
 
+Restart=on-failure
+RestartSec=30s
+
 [Install]
-WantedBy = multi-user.target
+WantedBy=multi-user.target
