@@ -1,0 +1,25 @@
+---
+
+- name: install/enable Nextcloud apps
+  become: true
+  become_user: "{{ nextcloud_http_user }}"
+  nextcloud_app:
+    name: "{{ item }}"
+    nextcloud_path: "{{ nextcloud_path }}"
+    state: "{{ nextcloud_apps_upgrade|ternary('latest', 'enabled') }}"
+  register: __nextcloud_app_installed
+  retries: 3
+  delay: 3
+  until: __nextcloud_app_installed is not failed
+  with_items: "{{ nextcloud_apps }}"
+
+- name: disable Nextcloud apps
+  become: true
+  become_user: "{{ nextcloud_http_user }}"
+  nextcloud_app:
+    name: "{{ item }}"
+    nextcloud_path: "{{ nextcloud_path }}"
+    state: disabled
+  with_items: "{{ nextcloud_apps_disabled }}"
+  when:
+    - nextcloud_apps_disabled|default()

@@ -16,6 +16,10 @@
     group: "{{ nextcloud_http_group }}"
     mode: 0640
 
+- include_tasks: nextcloud/apps.yml
+  vars:
+    nextcloud_path: "{{ nextcloud_dl_tmp_dir }}/nextcloud"
+
 - name: "Nextcloud upgrade: upgrade via occ commandline"
   become: true
   become_user: "{{ nextcloud_http_user }}"

@@ -68,48 +68,20 @@
   tags:
     - role:nextcloud:configure
 
+- include_tasks: nextcloud/apps.yml
+  vars:
+    nextcloud_path: "{{ __nextcloud_do_install|ternary(nextcloud_dl_tmp_dir + '/nextcloud', nextcloud_instance) }}"
+  tags:
+    - role:nextcloud:install
+    - role:nextcloud:apps
+  when: not __nextcloud_do_upgrade
+
 - name: finalize Nextcloud instance
   include_tasks: nextcloud/finalize.yml
   when: __nextcloud_do_install|bool or __nextcloud_do_upgrade|bool
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade
-
-- name: install/enable Nextcloud apps
-  become: true
-  become_user: "{{ nextcloud_http_user }}"
-  nextcloud_app:
-    name: "{{ nextcloud_item }}"
-    nextcloud_path: "{{ nextcloud_instance }}"
-    state: "{{ nextcloud_apps_upgrade|ternary('latest', 'enabled') }}"
-  loop_control:
-    loop_var: nextcloud_item
-  register: __nextcloud_app_installed
-  retries: 3
-  delay: 3
-  until: __nextcloud_app_installed is not failed
-  with_items: "{{ nextcloud_apps }}"
-  tags:
-    - role:nextcloud:install
-    - role:nextcloud:upgrade
-    - role:nextcloud:apps
-
-- name: disable Nextcloud apps
-  become: true
-  become_user: "{{ nextcloud_http_user }}"
-  nextcloud_app:
-    name: "{{ nextcloud_item }}"
-    nextcloud_path: "{{ nextcloud_instance }}"
-    state: disabled
-  loop_control:
-    loop_var: nextcloud_item
-  with_items: "{{ nextcloud_apps_disabled }}"
-  when:
-    - nextcloud_apps_disabled|d()
-  tags:
-    - role:nextcloud:install
-    - role:nextcloud:upgrade
-    - role:nextcloud:apps
 
 - name: setup Nextcloud push notification daemon
   include_tasks: nextcloud/notify-push.yml
