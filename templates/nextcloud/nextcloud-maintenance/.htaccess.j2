@@ -1,4 +1,0 @@
-{% set nextcloud_www_alias_name = nextcloud_www_alias|d()|ternary('/' + nextcloud_www_alias_name, '') %}
-RewriteEngine On
-RewriteCond %{REQUEST_URI} !^{{ nextcloud_www_alias_name }}/index.html$
-RewriteRule .* {{ nextcloud_www_alias_name }}/index.html [L,R=302]

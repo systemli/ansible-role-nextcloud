@@ -26,17 +26,9 @@
     - role:nextcloud:install
     - role:nextcloud:upgrade
     - role:nextcloud:configure
-    - role:nextcloud:maintenance-page
     - role:nextcloud:database
     - role:nextcloud:backup
     - role:nextcloud:apps
-
-- name: copy over Nextcloud maintenance page
-  include_tasks: nextcloud/maintenance-page.yml
-  tags:
-    - role:nextcloud:install
-    - role:nextcloud:upgrade
-    - role:nextcloud:maintenance-page
 
 - name: download new Nextcloud version if required
   include_tasks: nextcloud/download.yml

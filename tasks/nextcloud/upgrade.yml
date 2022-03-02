@@ -7,14 +7,6 @@
   args:
     chdir: "{{ nextcloud_webroot_old }}"
 
-- name: "Nextcloud upgrade: change symlink to maintenance page"
-  file:
-    src: "nextcloud-maintenance"
-    dest: "{{ nextcloud_symlink }}"
-    state: link
-    owner: root
-    group: root
-
 - name: "Nextcloud upgrade: copy config.php over from old instance"
   copy:
     src: "{{ nextcloud_webroot_old }}/config/config.php"

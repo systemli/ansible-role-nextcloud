@@ -17,9 +17,7 @@ to include the module into Ansible.
 * The requested Nextcloud version is installed into
   `{{ nextcloud_work_dir }}/nextcloud-{{ nextcloud_version }}`.
 * The symlink `{{ nextcloud_work_dir }}/nextcloud-current` points to the
-  active Nextcloud installation (or maintenance page uring upgrades).
-* A simple maintenance page (to be displayed during upgrades) is installed
-  to `{{ nextcloud_work_dir }}/nextcloud-maintenance`.
+  active Nextcloud installation.
 
 # Preliminaries
 
