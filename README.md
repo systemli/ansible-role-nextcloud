@@ -117,6 +117,18 @@ nextcloud_apps:
 To upgrade a Nextcloud instance, it's sufficient to bump the version
 in Role variable `nextcloud_version` and run the role again.
 
+## Manually upgrading Nextcloud
+
+If you prefer to upgrade Nextcloud manually, you can configure the role to not
+perform any uprades by setting `nextcloud_upgrade` to `False`. Beware that you
+also have to set `nextcloud_instance` to something that doesn't contain
+`nextcloud_version` in this case:
+
+```
+nextcloud_upgrade: False
+nextcloud_instance: "{{ nextcloud_workdir }}/nextcloud"
+```
+
 # Notification push daemon support
 
 When `nextcloud_notify_push` is enabled, the [Nextcloud notify_push

@@ -36,12 +36,12 @@
 
 - name: "Nextcloud facts: set nextcloud_webroot_old based on __nextcloud_version"
   set_fact:
-    nextcloud_webroot_old: "{{ nextcloud_webroot.rsplit('/', 1)[-2] }}/nextcloud-{{ __nextcloud_version }}"
+    nextcloud_webroot_old: "{{ nextcloud_instance | replace(nextcloud_version, __nextcloud_version) if nextcloud_version in nextcloud_instance else nextcloud_instance }}"
 
 - name: "Nextcloud facts: determine whether installation or upgrade"
   set_fact:
     __nextcloud_do_upgrade: "{{ ((not __nextcloud_do_install)
-        and __nextcloud_version|d()
+        and __nextcloud_version|d() and nextcloud_upgrade
         and nextcloud_version is version(__nextcloud_version, '>'))|ternary('yes', 'no') }}"
 
 - name: "Nextcloud facts: determine if config.php exists"

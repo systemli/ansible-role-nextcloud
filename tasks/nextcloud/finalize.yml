@@ -1,17 +1,22 @@
 ---
 
+- name: "Nextcloud finalize: check if webroot already exists"
+  stat:
+    path: "{{ nextcloud_instance }}"
+  register: __nextcloud_instance_stat
+
+- name: "Nextcloud finalize: optionally move away old webroot"
+  command: "mv {{ nextcloud_instance }} {{ nextcloud_instance }}.{{ ansible_date_time.epoch }}"
+  args:
+    creates: "{{ nextcloud_instance }}.{{ ansible_date_time.epoch }}"
+  when: __nextcloud_instance_stat.stat.exists
+
 - name: "Nextcloud finalize: create webroot for new instance"
   file:
     path: "{{ nextcloud_instance }}"
     state: directory
     mode: 0755
   register: __nextcloud_instance_created
-
-- name: "Nextcloud finalize: assert that Nextcloud instance webroot didn't exist"
-  assert:
-    that:
-      - __nextcloud_instance_created.changed
-    msg: "Error: Nextcloud instance webroot already existed: {{ nextcloud_instance }}"
 
 - name: "Nextcloud finalize: move new Nextcloud to nextcloud_instance"
   command: "cp -a {{ nextcloud_dl_tmp_dir }}/nextcloud/. {{ nextcloud_instance }}/"
