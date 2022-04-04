@@ -55,3 +55,8 @@
       - not nextcloud_data_dir.startswith(nextcloud_webroot)
       - not nextcloud_data_dir.startswith(nextcloud_symlink)
     msg: "Error: Data directory ({{ nextcloud_data_dir }}) is inside nextcloud_webroot ({{ nextcloud_webroot }}). Not supported."
+
+- name: "Nextcloud facts: determine if php-fpm is installed"
+  stat:
+    path: "/usr/sbin/php-fpm{{ nextcloud_php_version }}"
+  register: __nextcloud_php_fpm_bin
