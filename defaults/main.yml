@@ -1,7 +1,7 @@
 ---
 
 # Nextcloud version to install. Raise for upgrading.
-nextcloud_version: "23.0.4"
+nextcloud_version: "24.0.1"
 # Upgrade via Ansible? Set to `False` if upgrades are handled manually.
 # Make sure to set `nextcloud_instance` to something without `nextcloud_version`.
 nextcloud_upgrade: True
