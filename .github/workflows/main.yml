@@ -17,7 +17,6 @@ jobs:
       matrix:
         distro:
           - debian11
-          - debian10
 
     steps:
       - name: Check out the codebase.
