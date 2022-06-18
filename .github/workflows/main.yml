@@ -3,6 +3,8 @@ name: Integration
 on:
   pull_request:
   push:
+    branches:
+      - main
   schedule:
     # * is a special character in YAML so you have to quote this string
     # first of each month
@@ -20,15 +22,15 @@ jobs:
 
     steps:
       - name: Check out the codebase.
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v2.3.2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
       - name: Install test dependencies.
-        run: pip3 install ansible-lint molecule[docker] molecule-goss yamllint jmespath
+        run: pip3 install rich==10.16.2 ansible-lint==4.3.7 molecule[docker]==3.6.1 molecule-goss yamllint jmespath
       # See: https://github.com/geerlingguy/ansible-role-mysql/issues/422
       - name: Disable AppArmor on Debian.
         run: |
@@ -43,7 +45,6 @@ jobs:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
           MOLECULE_DISTRO: ${{ matrix.distro }}
-
   release:
     name: Ansible Galaxy
     needs:
@@ -54,4 +55,5 @@ jobs:
         uses: robertdebock/galaxy-action@1.2.1
         with:
           galaxy_api_key: ${{ secrets.galaxy_api_key }}
-    if: github.ref == 'refs/heads/main'
+          git_branch: main
+    if: github.ref == 'refs/heads/main' || contains(github.ref, 'refs/tags/')
