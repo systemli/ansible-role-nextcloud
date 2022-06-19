@@ -4,14 +4,12 @@ galaxy_info:
   author: systemli
   description: Role to deploy and upgrade Nextcloud instances on Debian
   license: GPLv3
-  min_ansible_version: 2.5
+  min_ansible_version: "2.5"
   galaxy_tags:
     - nextcloud
   platforms:
     - name: Debian
       versions:
         - bullseye
-  notifications:
-    webhooks: https://galaxy.ansible.com/api/v1/notifications/
 
 dependencies: []
