@@ -4,6 +4,7 @@
   file:
     name: "{{ nextcloud_dl_tmp_dir }}"
     state: directory
+    mode: 0755
 
 - name: "Nextcloud download: clone version branch from git repo"
   git:
@@ -12,7 +13,8 @@
     version: "v{{ nextcloud_version }}"
   when: nextcloud_src_type == "git"
 
-- block:
+- name: "Nextcloud download: Download Nextcloud archive"
+  block:
     - name: "Nextcloud download: fetch version tarball and signature"
       get_url:
         dest: "{{ nextcloud_dl_tmp_dir }}/{{ item | basename }}"

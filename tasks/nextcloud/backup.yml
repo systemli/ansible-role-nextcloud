@@ -4,6 +4,7 @@
   file:
     path: "{{ nextcloud_backup_dir }}"
     state: directory
+    mode: 0755
 
 - name: "Nextcloud backup: backup MySQL database"
   command: >
@@ -19,6 +20,7 @@
   copy:
     src: "{{ nextcloud_webroot_old }}/config/config.php"
     dest: "{{ nextcloud_backup_config }}"
+    mode: 0644
     remote_src: yes
 
 - name: "Nextcloud backup: backup data directory"
