@@ -11,7 +11,5 @@ galaxy_info:
     - name: Debian
       versions:
         - bullseye
-  notifications:
-    webhooks: https://galaxy.ansible.com/api/v1/notifications/
 
 dependencies: []

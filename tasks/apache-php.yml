@@ -1,5 +1,4 @@
 ---
-
 - name: Check which PHP variables are set in .htaccess
   command: 'grep -Eq "php_value\s+{{ item.key }}" {{ nextcloud_webroot }}/.htaccess'
   with_dict: "{{ nextcloud_php_settings|d({}) }}"
@@ -20,7 +19,7 @@
 - name: Add new PHP values to .htaccess
   replace:
     dest: "{{ nextcloud_webroot }}/.htaccess"
-    regexp: '^(<IfModule mod_php.*)$'
+    regexp: "^(<IfModule mod_php.*)$"
     replace: '\1\n  php_value {{ item.key }} {{ item.value }}'
   with_items: "{{ __nextcloud_htaccess_vars|json_query(query) }}"
   vars:
@@ -29,6 +28,6 @@
 - name: Set PHP variables in .user.ini
   lineinfile:
     dest: "{{ nextcloud_webroot }}/.user.ini"
-    regexp: '^{{ item.key }}=.*$'
-    line: '{{ item.key }}={{ item.value }}'
+    regexp: "^{{ item.key }}=.*$"
+    line: "{{ item.key }}={{ item.value }}"
   with_dict: "{{ nextcloud_php_settings|d({}) }}"

@@ -107,6 +107,7 @@
   template:
     src: nextcloud/nextcloud.logrotate.j2
     dest: /etc/logrotate.d/nextcloud
+    mode: 0644
   when: __nextcloud_do_install|bool or __nextcloud_do_upgrade|bool
   tags:
     - role:nextcloud:install

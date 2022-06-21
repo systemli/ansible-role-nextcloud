@@ -8,13 +8,16 @@ on:
   schedule:
     # * is a special character in YAML so you have to quote this string
     # first of each month
-    - cron: '0 0 1 * *'
+    - cron: "0 0 1 * *"
 
 jobs:
   integration:
     name: Integration
     uses: systemli/github-ansible-workflow/.github/workflows/ansible-integration-workflow.yaml@main
     with:
+      disable-apparmor-mysql: true
       distros: '[ "debian11" ]'
+      role-dependencies: |
+        - src: systemli.mariadb
     secrets:
       galaxy-token: ${{ secrets.galaxy_api_key }}
