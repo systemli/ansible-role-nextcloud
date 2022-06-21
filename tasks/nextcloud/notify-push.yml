@@ -1,6 +1,7 @@
 ---
 
-- block:
+- name: Install nextcloud app notify_push
+  block:
 
   - name: determine latest Nextcloud notify_push version
     uri:
@@ -9,7 +10,8 @@
     register: __nextcloud_notify_push_latest_uri
     when: nextcloud_notify_push_version == 'latest'
 
-  - set_fact:
+  - name: Set fact for nextcloud_notify_push_version
+    set_fact:
       nextcloud_notify_push_version: "{{ __nextcloud_notify_push_latest_uri.url.split('/')|last|regex_replace('v', '') }}"
     when: nextcloud_notify_push_version == 'latest'
 
