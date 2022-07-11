@@ -23,5 +23,3 @@ jobs:
       distros: '[ "debian11" ]'
       role-dependencies: |
         - src: systemli.mariadb
-    secrets:
-      galaxy-token: ${{ secrets.galaxy_api_key }}
