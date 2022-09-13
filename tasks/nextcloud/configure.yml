@@ -11,7 +11,7 @@
     owner: "{{ nextcloud_http_user }}"
     group: "{{ nextcloud_http_group }}"
     mode: 0640
-    drectory_mode: 0750
+    directory_mode: 0750
   when: nextcloud_config.system.skeletondirectory is defined
 
 - name: "Nextcloud configure: copy theme"
