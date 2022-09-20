@@ -1,20 +1,20 @@
 ---
 
 - name: test and reload apache2
-  command: apache2ctl configtest
+  ansible.builtin.command: apache2ctl configtest
   notify: reload apache2
 
 - name: test and restart apache2
-  command: apache2ctl configtest
+  ansible.builtin.command: apache2ctl configtest
   notify: restart apache2
 
 - name: reload apache2
-  service:
+  ansible.builtin.service:
     name: apache2
     state: reloaded
 
 - name: restart apache2
-  service:
+  ansible.builtin.service:
     name: apache2
     state: restarted
   notify:
@@ -22,12 +22,12 @@
 
 
 - name: restart nextcloud-notify-push
-  service:
+  ansible.builtin.service:
     name: nextcloud-notify-push
     state: restarted
 
 - name: restart php-fpm
-  service:
+  ansible.builtin.service:
     name: "php{{ nextcloud_php_version }}-fpm"
     state: restarted
   when: __nextcloud_php_fpm_bin and __nextcloud_php_fpm_bin.stat.exists

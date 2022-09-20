@@ -1,14 +1,14 @@
 ---
 
 - name: create Nextcloud MySQL database
-  mysql_db:
+  community.mysql.mysql_db:
     name: "{{ nextcloud_mysql_db }}"
     state: present
     login_unix_socket: /run/mysqld/mysqld.sock
   delegate_to: "{{ nextcloud_mysql_host_delegate }}"
 
 - name: create Nextcloud MySQL database user
-  mysql_user:
+  community.mysql.mysql_user:
     name: "{{ nextcloud_mysql_user }}"
     host: "{{ nextcloud_mysql_user_host }}"
     password: "{{ nextcloud_mysql_password }}"

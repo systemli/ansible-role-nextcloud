@@ -4,19 +4,19 @@
   block:
 
   - name: determine latest Nextcloud notify_push version
-    uri:
+    ansible.builtin.uri:
       url: https://github.com/nextcloud/notify_push/releases/latest
     check_mode: False
     register: __nextcloud_notify_push_latest_uri
     when: nextcloud_notify_push_version == 'latest'
 
   - name: Set fact for nextcloud_notify_push_version
-    set_fact:
+    ansible.builtin.set_fact:
       nextcloud_notify_push_version: "{{ __nextcloud_notify_push_latest_uri.url.split('/')|last|regex_replace('v', '') }}"
     when: nextcloud_notify_push_version == 'latest'
 
   - name: install Nextcloud notify_push daemon binary
-    get_url:
+    ansible.builtin.get_url:
       url: "{{ nextcloud_notify_push_url }}"
       dest: /usr/local/bin/notify_push
       owner: root
@@ -25,7 +25,7 @@
     notify: restart nextcloud-notify-push
 
   - name: install Nextcloud notify_push daemon systemd unit file
-    template:
+    ansible.builtin.template:
       src: systemd/nextcloud-notify-push.service.j2
       dest: /etc/systemd/system/nextcloud-notify-push.service
       owner: root
@@ -33,7 +33,7 @@
       mode: 0644
 
   - name: enable Nextcloud notify_push daemon systemd service
-    service:
+    ansible.builtin.service:
       name: nextcloud-notify-push
       state: started
       daemon_reload: yes
@@ -48,12 +48,12 @@
       state: "{{ nextcloud_apps_upgrade|ternary('latest', 'enabled') }}"
 
   - name: run handlers (restart webserver) before notify_push tests
-    meta: flush_handlers
+    ansible.builtin.meta: flush_handlers
 
   - name: test Nextcloud notify_push functionality
     become: true
     become_user: "{{ nextcloud_http_user }}"
-    command: php occ notify_push:self-test
+    ansible.builtin.command: php occ notify_push:self-test
     args:
       chdir: "{{ nextcloud_webroot }}"
     changed_when: false
