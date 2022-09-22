@@ -14,7 +14,7 @@
 - name: "Nextcloud facts: get instance status if already installed"
   become: true
   become_user: "{{ nextcloud_http_user }}"
-  command: php occ status --output=json
+  command: php occ status --no-warnings --output=json  # --no-warnings must be the first arg!
   args:
     chdir: "{{ nextcloud_webroot }}"
   register: __nextcloud_status_json
