@@ -53,8 +53,7 @@ The following preliminaries need to be met:
     - nextcloud
 ```
 
-* Configure role variables in `host_vars` for the target system (see
-  `defaults/main.yml` for a list of supported config variables):  
+* Configure role variables in `host_vars` for the target system:
     
 ```
 # Nextcloud settings
