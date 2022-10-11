@@ -3,12 +3,12 @@
 - name: "Nextcloud upgrade: set maintenance mode via occ commandline"
   become: true
   become_user: "{{ nextcloud_http_user }}"
-  command: php occ maintenance:mode --on
+  ansible.builtin.command: php occ maintenance:mode --on
   args:
     chdir: "{{ nextcloud_webroot_old }}"
 
 - name: "Nextcloud upgrade: copy config.php over from old instance"
-  copy:
+  ansible.builtin.copy:
     src: "{{ nextcloud_webroot_old }}/config/config.php"
     dest: "{{ nextcloud_dl_tmp_dir }}/nextcloud/config/config.php"
     remote_src: yes
@@ -16,14 +16,14 @@
     group: "{{ nextcloud_http_group }}"
     mode: 0640
 
-- include_tasks: nextcloud/apps.yml
+- ansible.builtin.include_tasks: nextcloud/apps.yml
   vars:
     nextcloud_path: "{{ nextcloud_dl_tmp_dir }}/nextcloud"
 
 - name: "Nextcloud upgrade: upgrade via occ commandline"
   become: true
   become_user: "{{ nextcloud_http_user }}"
-  command: >
+  ansible.builtin.command: >
       php occ upgrade
       --no-interaction
       --no-warnings
@@ -34,6 +34,6 @@
 - name: "Nextcloud upgrade: unset maintenance mode via occ commandline"
   become: true
   become_user: "{{ nextcloud_http_user }}"
-  command: php occ maintenance:mode --off
+  ansible.builtin.command: php occ maintenance:mode --off
   args:
     chdir: "{{ nextcloud_dl_tmp_dir }}/nextcloud"

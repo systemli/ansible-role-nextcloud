@@ -1,7 +1,7 @@
 ---
 
 - name: "Nextcloud configure: create data directory if missing"
-  file:
+  ansible.builtin.file:
     path: "{{ nextcloud_data_dir }}"
     state: directory
     owner: "{{ nextcloud_http_user }}"
@@ -11,7 +11,7 @@
 - name: "Nextcloud install: install via occ commandline"
   become: true
   become_user: "{{ nextcloud_http_user }}"
-  command: >
+  ansible.builtin.command: >
       php occ maintenance:install
       --database=mysql
       --database-host={{ nextcloud_mysql_host }}

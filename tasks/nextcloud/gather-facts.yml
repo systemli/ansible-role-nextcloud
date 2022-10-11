@@ -3,18 +3,18 @@
 # TODO: Add support for nextcloud_version='latest'
 
 - name: "Nextcloud facts: determine whether instance is already installed"
-  stat:
+  ansible.builtin.stat:
     path: "{{ nextcloud_webroot }}/version.php"
   register: __nextcloud_installed
 
 - name: "Nextcloud facts: determine whether instance is to be installed"
-  set_fact:
+  ansible.builtin.set_fact:
     __nextcloud_do_install: "{{ __nextcloud_installed.stat.exists|ternary('no', 'yes') }}"
 
 - name: "Nextcloud facts: get instance status if already installed"
   become: true
   become_user: "{{ nextcloud_http_user }}"
-  command: php occ status --no-warnings --output=json  # --no-warnings must be the first arg!
+  ansible.builtin.command: php occ status --no-warnings --output=json  # --no-warnings must be the first arg!
   args:
     chdir: "{{ nextcloud_webroot }}"
   register: __nextcloud_status_json
@@ -24,39 +24,39 @@
 
 # Safety check: 'occ status' output not plain json if in maintenance mode
 - name: "Nextcloud facts: assert that Nextcloud not in maintenance mode"
-  assert:
+  ansible.builtin.assert:
     that:
       - not "Nextcloud is in maintenance mode" in __nextcloud_status_json.stdout|d()
       - __nextcloud_status_json.rc|d(0) == 0
     msg: "Error: Nextcloud already in maintenance mode or other error"
 
 - name: "Nextcloud facts: parse instance status if already installed"
-  set_fact:
+  ansible.builtin.set_fact:
     __nextcloud_version: "{{ (__nextcloud_status_json.stdout|d())|from_json|json_query('[versionstring]')|join() if __nextcloud_status_json.stdout|d() else {} }}"
 
 - name: "Nextcloud facts: set nextcloud_webroot_old based on __nextcloud_version"
-  set_fact:
+  ansible.builtin.set_fact:
     nextcloud_webroot_old: "{{ nextcloud_instance | replace(nextcloud_version, __nextcloud_version) if nextcloud_version in nextcloud_instance else nextcloud_instance }}"
 
 - name: "Nextcloud facts: determine whether installation or upgrade"
-  set_fact:
+  ansible.builtin.set_fact:
     __nextcloud_do_upgrade: "{{ ((not __nextcloud_do_install)
         and __nextcloud_version|d() and nextcloud_upgrade
         and nextcloud_version is version(__nextcloud_version, '>'))|ternary('yes', 'no') }}"
 
 - name: "Nextcloud facts: determine if config.php exists"
-  stat:
+  ansible.builtin.stat:
     path: "{{ nextcloud_symlink }}/config/config.php"
   register: __nextcloud_config
 
 - name: "Nextcloud facts: assert that data dir is outside nextcloud_webroot"
-  assert:
+  ansible.builtin.assert:
     that:
       - not nextcloud_data_dir.startswith(nextcloud_webroot)
       - not nextcloud_data_dir.startswith(nextcloud_symlink)
     msg: "Error: Data directory ({{ nextcloud_data_dir }}) is inside nextcloud_webroot ({{ nextcloud_webroot }}). Not supported."
 
 - name: "Nextcloud facts: determine if php-fpm is installed"
-  stat:
+  ansible.builtin.stat:
     path: "/usr/sbin/php-fpm{{ nextcloud_php_version }}"
   register: __nextcloud_php_fpm_bin

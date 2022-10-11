@@ -1,33 +1,33 @@
 ---
 
 - name: "Nextcloud finalize: check if webroot already exists"
-  stat:
+  ansible.builtin.stat:
     path: "{{ nextcloud_instance }}"
   register: __nextcloud_instance_stat
 
 - name: "Nextcloud finalize: optionally move away old webroot"
-  command: "mv {{ nextcloud_instance }} {{ nextcloud_instance }}.{{ ansible_date_time.epoch }}"
+  ansible.builtin.command: "mv {{ nextcloud_instance }} {{ nextcloud_instance }}.{{ ansible_date_time.epoch }}"
   args:
     creates: "{{ nextcloud_instance }}.{{ ansible_date_time.epoch }}"
   when: __nextcloud_instance_stat.stat.exists
 
 - name: "Nextcloud finalize: create webroot for new instance"
-  file:
+  ansible.builtin.file:
     path: "{{ nextcloud_instance }}"
     state: directory
     mode: 0755
   register: __nextcloud_instance_created
 
 - name: "Nextcloud finalize: move new Nextcloud to nextcloud_instance"
-  command: "cp -a {{ nextcloud_dl_tmp_dir }}/nextcloud/. {{ nextcloud_instance }}/"
+  ansible.builtin.command: "cp -a {{ nextcloud_dl_tmp_dir }}/nextcloud/. {{ nextcloud_instance }}/"
 
 - name: "Nextcloud finalize: remove temporary download directory"
-  file:
+  ansible.builtin.file:
     path: "{{ nextcloud_dl_tmp_dir }}"
     state: absent
 
 - name: "Nextcloud finalize: change symlink to nextcloud_instance"
-  file:
+  ansible.builtin.file:
     src: "{{ nextcloud_instance.rsplit('/', 1)[-1] }}"
     dest: "{{ nextcloud_symlink }}"
     state: link

@@ -1,6 +1,6 @@
 ---
 - name: Check which PHP variables are set in .htaccess
-  command: 'grep -Eq "php_value\s+{{ item.key }}" {{ nextcloud_webroot }}/.htaccess'
+  ansible.builtin.command: 'grep -Eq "php_value\s+{{ item.key }}" {{ nextcloud_webroot }}/.htaccess'
   with_dict: "{{ nextcloud_php_settings|d({}) }}"
   register: __nextcloud_htaccess_vars
   check_mode: False
@@ -8,7 +8,7 @@
   changed_when: False
 
 - name: Replace existing PHP variables in .htaccess
-  replace:
+  ansible.builtin.replace:
     dest: "{{ nextcloud_webroot }}/.htaccess"
     regexp: '^(\s*)php_value\s+{{ item.key }}.*$'
     replace: '\1php_value {{ item.key }} {{ item.value }}'
@@ -17,7 +17,7 @@
     query: "results[?rc == `0`].item"
 
 - name: Add new PHP values to .htaccess
-  replace:
+  ansible.builtin.replace:
     dest: "{{ nextcloud_webroot }}/.htaccess"
     regexp: "^(<IfModule mod_php.*)$"
     replace: '\1\n  php_value {{ item.key }} {{ item.value }}'
@@ -26,7 +26,7 @@
     query: "results[?rc == `1`].item"
 
 - name: Set PHP variables in .user.ini
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: "{{ nextcloud_webroot }}/.user.ini"
     regexp: "^{{ item.key }}=.*$"
     line: "{{ item.key }}={{ item.value }}"
