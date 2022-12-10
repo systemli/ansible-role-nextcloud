@@ -14,6 +14,7 @@
   when: nextcloud_src_type == "git"
 
 - name: "Nextcloud download: Download Nextcloud archive"
+  when: nextcloud_src_type == "tar"
   block:
     - name: "Nextcloud download: fetch version tarball and signature"
       ansible.builtin.get_url:
@@ -44,7 +45,6 @@
         dest: "{{ nextcloud_dl_tmp_dir }}"
         src: "{{ nextcloud_dl_tmp_dir }}/{{ nextcloud_tar_url | basename }}"
         remote_src: yes
-  when: nextcloud_src_type == "tar"
 
 - name: "Nextcloud download: adjust owner for installation/upgrade"
   ansible.builtin.file:

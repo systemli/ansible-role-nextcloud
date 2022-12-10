@@ -1,6 +1,6 @@
 ---
 
-- name: install Nextcloud Python dependencies
+- name: Install Nextcloud Python dependencies
   ansible.builtin.apt:
     pkg: "{{ nextcloud_dependencies_python }}"
     state: present
@@ -8,7 +8,7 @@
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
-- name: install Nextcloud dependencies
+- name: Install Nextcloud dependencies
   ansible.builtin.apt:
     pkg: "{{ nextcloud_dependencies }}"
     state: present
@@ -16,11 +16,12 @@
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
-- ansible.builtin.include_tasks: php.yml
+- name: Run php tasks
+  ansible.builtin.include_tasks: php.yml
   tags:
     - role:nextcloud:php
 
-- name: gather Nextcloud instance facts
+- name: Gather Nextcloud instance facts
   ansible.builtin.include_tasks: nextcloud/gather-facts.yml
   tags:
     - role:nextcloud:install
@@ -30,60 +31,61 @@
     - role:nextcloud:backup
     - role:nextcloud:apps
 
-- name: download new Nextcloud version if required
+- name: Download new Nextcloud version if required
   ansible.builtin.include_tasks: nextcloud/download.yml
-  when: __nextcloud_do_install|bool or __nextcloud_do_upgrade|bool
+  when: __nextcloud_do_install | bool or __nextcloud_do_upgrade | bool
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
-- name: setup Nextcloud MySQL database
+- name: Setup Nextcloud MySQL database
   ansible.builtin.include_tasks: nextcloud/mysql.yml
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade
     - role:nextcloud:database
 
-- name: install Nextcloud
+- name: Install Nextcloud
   ansible.builtin.include_tasks: nextcloud/install.yml
-  when: __nextcloud_do_install|bool and not __nextcloud_config.stat.exists
+  when: __nextcloud_do_install | bool and not __nextcloud_config.stat.exists
   tags:
     - role:nextcloud:install
 
-- name: backup Nextcloud
+- name: Backup Nextcloud
   ansible.builtin.include_tasks: nextcloud/backup.yml
-  when: nextcloud_backup|bool and __nextcloud_do_upgrade|bool
+  when: nextcloud_backup | bool and __nextcloud_do_upgrade | bool
   tags:
     - role:nextcloud:upgrade
     - role:nextcloud:backup
 
-- name: upgrade Nextcloud
+- name: Upgrade Nextcloud
   ansible.builtin.include_tasks: nextcloud/upgrade.yml
-  when: __nextcloud_do_upgrade|bool
+  when: __nextcloud_do_upgrade | bool
   tags:
     - role:nextcloud:upgrade
 
-- name: configure Nextcloud
+- name: Configure Nextcloud
   ansible.builtin.include_tasks: nextcloud/configure.yml
   tags:
     - role:nextcloud:configure
 
-- ansible.builtin.include_tasks: nextcloud/apps.yml
+- name: Include apps tasks
+  ansible.builtin.include_tasks: nextcloud/apps.yml
   vars:
-    nextcloud_path: "{{ __nextcloud_do_install|ternary(nextcloud_dl_tmp_dir + '/nextcloud', nextcloud_instance) }}"
+    nextcloud_path: "{{ __nextcloud_do_install | ternary(nextcloud_dl_tmp_dir + '/nextcloud', nextcloud_instance) }}"
   tags:
     - role:nextcloud:install
     - role:nextcloud:apps
   when: not __nextcloud_do_upgrade
 
-- name: finalize Nextcloud instance
+- name: Finalize Nextcloud instance
   ansible.builtin.include_tasks: nextcloud/finalize.yml
-  when: __nextcloud_do_install|bool or __nextcloud_do_upgrade|bool
+  when: __nextcloud_do_install | bool or __nextcloud_do_upgrade | bool
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
-- name: setup Nextcloud push notification daemon
+- name: Setup Nextcloud push notification daemon
   ansible.builtin.include_tasks: nextcloud/notify-push.yml
   when: nextcloud_notify_push
   tags:
@@ -92,7 +94,7 @@
     - role:nextcloud:apps
     - role:nextcloud:notify-push
 
-- name: create Nextcloud cronjob
+- name: Create Nextcloud cronjob
   ansible.builtin.cron:
     name: "Nextcloud cronjob"
     minute: "*/5"
@@ -103,22 +105,23 @@
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
-- name: create Nextcloud logrotate rule
+- name: Create Nextcloud logrotate rule
   ansible.builtin.template:
     src: nextcloud/nextcloud.logrotate.j2
     dest: /etc/logrotate.d/nextcloud
     mode: 0644
-  when: __nextcloud_do_install|bool or __nextcloud_do_upgrade|bool
+  when: __nextcloud_do_install | bool or __nextcloud_do_upgrade | bool
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
-- ansible.builtin.include_tasks: apache-php.yml
-  when: nextcloud_apache_php|d()
+- name: Run apache-php tasks
+  ansible.builtin.include_tasks: apache-php.yml
+  when: nextcloud_apache_php | default()
   tags:
     - role:nextcloud:apache
 
-- name: copy nextcloud notify script
+- name: Copy nextcloud notify script
   ansible.builtin.template:
     src: nextcloud-notify-users.sh.j2
     dest: /usr/local/bin/nextcloud-notify-users.sh

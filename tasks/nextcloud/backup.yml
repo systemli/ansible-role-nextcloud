@@ -27,7 +27,7 @@
   ansible.builtin.command: "cp -a {{ nextcloud_data_dir }} {{ nextcloud_backup_data_dir }}"
   args:
     creates: "{{ nextcloud_backup_data_dir }}"
-  when: nextcloud_backup_data|d()
+  when: nextcloud_backup_data | default()
 
 - name: "Nextcloud backup: Verify backup"
   ansible.builtin.stat:

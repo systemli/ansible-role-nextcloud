@@ -9,7 +9,7 @@
 
 - name: "Nextcloud facts: determine whether instance is to be installed"
   ansible.builtin.set_fact:
-    __nextcloud_do_install: "{{ __nextcloud_installed.stat.exists|ternary('no', 'yes') }}"
+    __nextcloud_do_install: "{{ __nextcloud_installed.stat.exists | ternary('no', 'yes') }}"
 
 - name: "Nextcloud facts: get instance status if already installed"
   become: true
@@ -26,13 +26,13 @@
 - name: "Nextcloud facts: assert that Nextcloud not in maintenance mode"
   ansible.builtin.assert:
     that:
-      - not "Nextcloud is in maintenance mode" in __nextcloud_status_json.stdout|d()
-      - __nextcloud_status_json.rc|d(0) == 0
+      - not "Nextcloud is in maintenance mode" in __nextcloud_status_json.stdout | default()
+      - __nextcloud_status_json.rc | default(0) == 0
     msg: "Error: Nextcloud already in maintenance mode or other error"
 
 - name: "Nextcloud facts: parse instance status if already installed"
   ansible.builtin.set_fact:
-    __nextcloud_version: "{{ (__nextcloud_status_json.stdout|d())|from_json|json_query('[versionstring]')|join() if __nextcloud_status_json.stdout|d() else {} }}"
+    __nextcloud_version: "{{ (__nextcloud_status_json.stdout | default()) | from_json | json_query('[versionstring]') | join() if __nextcloud_status_json.stdout | default() else {} }}"
 
 - name: "Nextcloud facts: set nextcloud_webroot_old based on __nextcloud_version"
   ansible.builtin.set_fact:
@@ -41,8 +41,8 @@
 - name: "Nextcloud facts: determine whether installation or upgrade"
   ansible.builtin.set_fact:
     __nextcloud_do_upgrade: "{{ ((not __nextcloud_do_install)
-        and __nextcloud_version|d() and nextcloud_upgrade
-        and nextcloud_version is version(__nextcloud_version, '>'))|ternary('yes', 'no') }}"
+        and __nextcloud_version | default() and nextcloud_upgrade
+        and nextcloud_version is version(__nextcloud_version, '>')) | ternary('yes', 'no') }}"
 
 - name: "Nextcloud facts: determine if config.php exists"
   ansible.builtin.stat:

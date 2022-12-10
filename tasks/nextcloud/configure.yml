@@ -2,7 +2,7 @@
 
 - name: "Nextcloud configure: set Nextcloud directory"
   ansible.builtin.set_fact:
-    __nextcloud_install_dir: "{{ nextcloud_dl_tmp_dir + '/nextcloud' if (__nextcloud_do_install|bool or __nextcloud_do_upgrade|bool) else nextcloud_instance }}"
+    __nextcloud_install_dir: "{{ nextcloud_dl_tmp_dir + '/nextcloud' if (__nextcloud_do_install | bool or __nextcloud_do_upgrade | bool) else nextcloud_instance }}"
 
 - name: "Nextcloud configure: copy skeleton directory"
   ansible.builtin.copy:
@@ -54,9 +54,10 @@
 
 - name: "Nextcloud configure: Assert we have an instance id"
   ansible.builtin.assert:
-    that: __nextcloud_instanceid|length > 0
+    that: __nextcloud_instanceid | length > 0
 
 - name: "Nextcloud configure: configure nextcloud and apps"
+  when: __nextcloud_updated_preferences != __nextcloud_old_preferences
   block:
     - name: "Nextcloud configure: create temporary config file"
       ansible.builtin.tempfile:
@@ -122,7 +123,6 @@
         - "{{ __nextcloud_preferences.path }}"
         - "{{ __nextcloud_preferences_diff.path }}"
       check_mode: False
-  when: __nextcloud_updated_preferences != __nextcloud_old_preferences
 
 # the theming app is not compatible with using the old theming way above
 - name: Copy images for theming app
