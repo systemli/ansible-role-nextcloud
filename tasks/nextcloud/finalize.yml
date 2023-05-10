@@ -1,5 +1,4 @@
 ---
-
 - name: "Nextcloud finalize: check if webroot already exists"
   ansible.builtin.stat:
     path: "{{ nextcloud_instance }}"
@@ -20,6 +19,7 @@
 
 - name: "Nextcloud finalize: move new Nextcloud to nextcloud_instance"
   ansible.builtin.command: "cp -a {{ nextcloud_dl_tmp_dir }}/nextcloud/. {{ nextcloud_instance }}/"
+  changed_when: false
 
 - name: "Nextcloud finalize: remove temporary download directory"
   ansible.builtin.file:
