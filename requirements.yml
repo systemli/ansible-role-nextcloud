@@ -1,0 +1,7 @@
+---
+roles:
+  - name: systemli.mariadb
+    version: 1.0.0
+collections:
+  - community.general
+  - community.mysql

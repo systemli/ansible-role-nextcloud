@@ -1,3 +1,0 @@
----
-- src: https://github.com/systemli/ansible-role-mariadb.git
-  name: systemli.mariadb

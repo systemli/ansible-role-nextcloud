@@ -1,5 +1,4 @@
 ---
-
 - name: "Nextcloud download: create temporary download directory"
   ansible.builtin.file:
     name: "{{ nextcloud_dl_tmp_dir }}"
@@ -20,15 +19,17 @@
       ansible.builtin.get_url:
         dest: "{{ nextcloud_dl_tmp_dir }}/{{ item | basename }}"
         url: "{{ item }}"
-        mode: 0600
+        mode: "0600"
       with_items:
         - "{{ nextcloud_tar_url }}"
         - "{{ nextcloud_sig_url }}"
+
     - name: "Nextcloud download: provide upstream signing-key"
       ansible.builtin.copy:
         dest: "{{ nextcloud_dl_tmp_dir }}"
         src: "{{ nextcloud_gpg_key }}.gpg"
-        mode: 0600
+        mode: "0600"
+
     - name: "Nextcloud download: verify signature of tarball"
       args:
         chdir: "{{ nextcloud_dl_tmp_dir }}"
@@ -36,10 +37,13 @@
         gpgv --keyring ./{{ nextcloud_gpg_key }}.gpg
         {{ nextcloud_sig_url | basename }}
         {{ nextcloud_tar_url | basename }}
+      changed_when: false
+
     - name: "Nextcloud download: ensure sane state before extracting tarball"
       ansible.builtin.file:
         path: "{{ nextcloud_dl_tmp_dir }}/nextcloud"
         state: absent
+
     - name: "Nextcloud download: extract tarball"
       ansible.builtin.unarchive:
         dest: "{{ nextcloud_dl_tmp_dir }}"
