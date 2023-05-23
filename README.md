@@ -38,6 +38,7 @@ The following preliminaries need to be met:
   * Webserver (e.g. Apache2/Nginx) with basic PHP support
   * Mail server if Nextcloud instance shall send out mails (may be
     remote)
+  * `jmespath` library needs to be installed on the host running the playbook (needed for the `json_query` filter). See `requirements.txt`
 * The Nextcloud `data` directory needs to be located outside
   `nextcloud_work_dir`
 
