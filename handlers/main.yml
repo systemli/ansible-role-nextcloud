@@ -1,12 +1,12 @@
 ---
 - name: Test and reload apache2
   ansible.builtin.command: apache2ctl configtest
-  changed_when: false
+  changed_when: true
   notify: reload apache2
 
 - name: Test and restart apache2
   ansible.builtin.command: apache2ctl configtest
-  changed_when: false
+  changed_when: true
   notify: Restart apache2
 
 - name: Reload apache2
