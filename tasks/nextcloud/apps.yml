@@ -1,7 +1,7 @@
 ---
 
 - name: Install/enable Nextcloud apps
-  become: true
+  become: True
   become_user: "{{ nextcloud_http_user }}"
   nextcloud_app:
     name: "{{ item }}"
@@ -14,7 +14,7 @@
   with_items: "{{ nextcloud_apps }}"
 
 - name: Disable Nextcloud apps
-  become: true
+  become: True
   become_user: "{{ nextcloud_http_user }}"
   nextcloud_app:
     name: "{{ item }}"

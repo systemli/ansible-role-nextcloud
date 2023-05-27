@@ -37,7 +37,7 @@
         gpgv --keyring ./{{ nextcloud_gpg_key }}.gpg
         {{ nextcloud_sig_url | basename }}
         {{ nextcloud_tar_url | basename }}
-      changed_when: false
+      changed_when: False
 
     - name: "Nextcloud download: ensure sane state before extracting tarball"
       ansible.builtin.file:
