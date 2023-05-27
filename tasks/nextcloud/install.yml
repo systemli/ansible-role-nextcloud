@@ -9,7 +9,7 @@
     mode: 0750
 
 - name: "Nextcloud install: install via occ commandline"
-  become: true
+  become: True
   become_user: "{{ nextcloud_http_user }}"
   ansible.builtin.command: >
       php occ maintenance:install

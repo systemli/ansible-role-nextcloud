@@ -42,7 +42,7 @@
       enabled: yes
 
   - name: Install and enable Nextcloud app notify_push
-    become: true
+    become: True
     become_user: "{{ nextcloud_http_user }}"
     nextcloud_app:
       name: notify_push
@@ -53,10 +53,10 @@
     ansible.builtin.meta: flush_handlers
 
   - name: Test Nextcloud notify_push functionality
-    become: true
+    become: True
     become_user: "{{ nextcloud_http_user }}"
     ansible.builtin.command: php occ notify_push:self-test
     args:
       chdir: "{{ nextcloud_webroot }}"
-    changed_when: false
+    changed_when: False
     check_mode: no
