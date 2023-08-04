@@ -4,8 +4,12 @@ driver:
   provider:
     name: virtualbox
 platforms:
-  - name: nextcloud-bullseye64
-    box: debian/bullseye64
+  - name: nextcloud-bookworm64
+    box: debian/bookworm64
+provisioner:
+  name: ansible
+  ansible_args:
+    - --diff
 lint: |
   set -e
   yamllint .
