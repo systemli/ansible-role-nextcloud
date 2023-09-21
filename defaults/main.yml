@@ -93,8 +93,7 @@ nextcloud_www_alias: yes
 nextcloud_www_alias_name: "nextcloud"
 
 # List of Nextcloud (custom) Apps which should be copied from nextcloud/apps/ to
-# the instance apps directory. The apps then need to be enabled by also adding
-# them to nextcloud_apps.
+# the instance apps directory and enabled in nextcloud.
 nextcloud_custom_apps: []
 
 # List of Nextcloud Apps to install/enable
