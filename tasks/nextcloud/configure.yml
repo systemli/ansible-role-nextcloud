@@ -35,6 +35,19 @@
   with_items:
     - "{{ nextcloud_custom_apps }}"
 
+- name: "Nextcloud configure: enable custom apps"
+  become: true
+  become_user: "{{ nextcloud_http_user }}"
+  nextcloud_app:
+    name: "{{ item }}"
+    nextcloud_path: "{{ __nextcloud_install_dir }}"
+    state: "enabled"
+  register: __nextcloud_app_installed
+  retries: 3
+  delay: 3
+  until: __nextcloud_app_installed is not failed
+  with_items: "{{ nextcloud_custom_apps }}"
+
 - name: "Nextcloud configure: get global preferences"
   ansible.builtin.command: php occ config:list --private --output=json
   args:
