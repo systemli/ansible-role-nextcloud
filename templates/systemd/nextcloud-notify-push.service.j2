@@ -3,7 +3,7 @@ Description=Push daemon for Nextcloud clients
 After=network-online.target
 
 [Service]
-Environment={%if nextcloud_notify_push_bind|default(False) %}BIND={{ nextcloud_notify_push_bind }}{% endif %} PORT={{ nextcloud_notify_push_port }} {% if nextcloud_notify_push_metrics_port|default(False) %}METRICS_PORT={{ nextcloud_notify_push_metrics_port }}{% endif %} {%if nextcloud_notify_push_allow_self_signed|default(False) %}ALLOW_SELF_SIGNED=true{% endif %}
+Environment={%if nextcloud_notify_push_bind|default(False) %}BIND={{ nextcloud_notify_push_bind }}{% endif %} PORT={{ nextcloud_notify_push_port }} {% if nextcloud_notify_push_metrics_port|default(False) %}METRICS_PORT={{ nextcloud_notify_push_metrics_port }}{% endif %} {%if nextcloud_notify_push_allow_self_signed|default(False) %}ALLOW_SELF_SIGNED=true{% endif %} {%if nextcloud_notify_push_max_connection_time|default(False) %}MAX_CONNECTION_TIME={{ nextcloud_notify_push_max_connection_time }}{% endif %}
 
 ExecStart=/usr/local/bin/notify_push {{ nextcloud_instance }}/config/config.php
 User={{ nextcloud_http_user }}
