@@ -163,6 +163,7 @@ nextcloud_notify_push: False
 nextcloud_notify_push_version: "latest"
 nextcloud_notify_push_url: "https://github.com/nextcloud/notify_push/releases/download/v{{ nextcloud_notify_push_version }}/notify_push-x86_64-unknown-linux-musl"
 nextcloud_notify_push_allow_self_signed: False
+nextcloud_notify_push_max_connection_time: False
 
 # Uncomment to bind Nextcloud notify_push daemon to localhost
 # nextcloud_notify_push_bind: 127.0.0.1
