@@ -25,6 +25,7 @@
   ansible.builtin.file:
     path: "{{ nextcloud_dl_tmp_dir }}"
     state: absent
+  diff: False
 
 - name: "Nextcloud finalize: change symlink to nextcloud_instance"
   ansible.builtin.file:
