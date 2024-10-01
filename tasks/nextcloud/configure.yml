@@ -36,7 +36,7 @@
     - "{{ nextcloud_custom_apps }}"
 
 - name: "Nextcloud configure: enable custom apps"
-  become: true
+  become: True
   become_user: "{{ nextcloud_http_user }}"
   nextcloud_app:
     name: "{{ item }}"

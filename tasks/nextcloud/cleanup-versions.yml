@@ -1,0 +1,21 @@
+---
+
+- name: Get link destination of nextcloud_symlink
+  ansible.builtin.stat:
+    path: "{{ nextcloud_symlink }}"
+  register: __nextcloud_symlink
+
+- name: Find old version directories in nextcloud_workdir
+  ansible.builtin.find:
+    paths: "{{ nextcloud_workdir }}"
+    file_type: directory
+    excludes: "{{ __nextcloud_symlink.stat.lnk_target }},nextcloud-{{ nextcloud_version }}"
+    patterns: '^nextcloud-[0-9]+\.[0-9]+\.[0-9]+$'
+    use_regex: True
+  register: __nextcloud_version_folders
+
+- name: "Remove old version directories except last {{ nextcloud_cleanup_versions_keep }}"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop: "{{ (__nextcloud_version_folders | json_query('files[].path') | sort)[:-nextcloud_cleanup_versions_keep] }}"
