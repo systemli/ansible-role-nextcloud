@@ -172,3 +172,7 @@ nextcloud_notify_push_max_connection_time: False
 nextcloud_notify_push_port: 7867
 # Uncomment to expose Nextcloud notify_push metrics
 # nextcloud_notify_push_metrics_port: 7868
+
+# Cleanup old nextcloud version folders
+nextcloud_cleanup_versions: True
+nextcloud_cleanup_versions_keep: 4

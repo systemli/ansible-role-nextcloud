@@ -85,6 +85,13 @@
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
+- name: Cleanup old Nextcloud version folders
+  ansible.builtin.import_tasks: nextcloud/cleanup-versions.yml
+  when: nextcloud_cleanup_versions
+  tags:
+    - role:nextcloud:upgrade
+    - role:nextcloud:cleanup
+
 - name: Setup Nextcloud push notification daemon
   ansible.builtin.include_tasks: nextcloud/notify-push.yml
   when: nextcloud_notify_push
