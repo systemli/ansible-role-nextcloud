@@ -112,6 +112,20 @@
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
+- name: Create Nextcloud app update cronjob
+  ansible.builtin.cron:
+    name: "Nextcloud app update cronjob"
+    minute: 0
+    hour: 6
+    weekday: "{{ nextcloud_app_update_cronjob_weekday }}"
+    user: "{{ nextcloud_http_user }}"
+    job: "php -f {{ nextcloud_instance }}/occ app:update --all >/dev/null"
+    cron_file: nextcloud
+    state: "{{ nextcloud_app_update_cronjob|ternary('present', 'absent') }}"
+  tags:
+    - role:nextcloud:install
+    - role:nextcloud:upgrade
+
 - name: Create Nextcloud logrotate rule
   ansible.builtin.template:
     src: nextcloud/nextcloud.logrotate.j2

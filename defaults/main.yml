@@ -176,3 +176,7 @@ nextcloud_notify_push_port: 7867
 # Cleanup old nextcloud version folders
 nextcloud_cleanup_versions: True
 nextcloud_cleanup_versions_keep: 4
+
+# Configure automatic app updates via cron
+nextcloud_app_update_cronjob: True
+nextcloud_app_update_cronjob_weekday: "1,3,5"
