@@ -33,6 +33,19 @@
   notify: Test and restart apache2
   changed_when: True
 
+- name: "Nextcloud upgrade: run occ db:{{ item }}"
+  become: True
+  become_user: "{{ nextcloud_http_user }}"
+  ansible.builtin.command: >
+    php occ db:{{ item }}
+  args:
+    chdir: "{{ nextcloud_dl_tmp_dir }}/nextcloud"
+  loop:
+    - add-missing-columns
+    - add-missing-indices
+    - add-missing-primary-keys
+  changed_when: True
+
 - name: "Nextcloud upgrade: unset maintenance mode via occ commandline"
   become: True
   become_user: "{{ nextcloud_http_user }}"
