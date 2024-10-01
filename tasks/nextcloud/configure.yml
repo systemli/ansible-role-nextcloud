@@ -12,7 +12,9 @@
     group: "{{ nextcloud_http_group }}"
     mode: 0640
     directory_mode: 0750
-  when: nextcloud_config.system.skeletondirectory is defined
+  when:
+    - nextcloud_config.system.skeletondirectory is defined
+    - nextcloud_config.system.skeletondirectory != ''
 
 - name: "Nextcloud configure: copy theme"
   ansible.builtin.copy:
