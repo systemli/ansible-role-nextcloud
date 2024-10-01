@@ -1,7 +1,6 @@
 ---
 # Nextcloud version to install. Raise for upgrading.
-#nextcloud_version: "26.0.4"
-nextcloud_version: "{% if ansible_distribution_major_version | int == 11 %}25.0.9{% else %}26.0.4{% endif %}"
+nextcloud_version: "29.0.7"
 # Upgrade via Ansible? Set to `False` if upgrades are handled manually.
 # Make sure to set `nextcloud_instance` to something without `nextcloud_version`.
 nextcloud_upgrade: True
@@ -66,7 +65,7 @@ nextcloud_config:
 # Configure the Apache2 php.ini automatically?
 nextcloud_apache_php: yes
 
-nextcloud_php_version: "{% if ansible_distribution_major_version | int == 11 %}7.4{% else %}8.2{% endif %}"
+nextcloud_php_version: 8.2
 
 # Set custom PHP file size limits
 nextcloud_php_settings:
