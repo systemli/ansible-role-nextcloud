@@ -252,7 +252,8 @@ def app_state_store(module, app_store_url, app_version_local=''):
                     app_url_store = release['download']
                     break
                 if not release['isNightly']:
-                    if Version(release['version']) >= Version(app_version_store):
+                    version = Version(release['version'])
+                    if (version.prerease == () or version.prerease == None) and version >= Version(app_version_store):
                         app_version_store = release['version']
                         app_url_store = release['download']
             break
