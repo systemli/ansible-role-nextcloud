@@ -12,18 +12,18 @@
     dest: "{{ nextcloud_webroot }}/.htaccess"
     regexp: '^(\s*)php_value\s+{{ item.key }}.*$'
     replace: '\1php_value {{ item.key }} {{ item.value }}'
-  with_items: "{{ __nextcloud_htaccess_vars | json_query(query) }}"
+  with_items: "{{ __nextcloud_htaccess_vars | json_query(results_query) }}"
   vars:
-    query: "results[?rc == `0`].item"
+    results_query: "results[?rc == `0`].item"
 
 - name: Add new PHP values to .htaccess
   ansible.builtin.replace:
     dest: "{{ nextcloud_webroot }}/.htaccess"
     regexp: "^(<IfModule mod_php.*)$"
     replace: '\1\n  php_value {{ item.key }} {{ item.value }}'
-  with_items: "{{ __nextcloud_htaccess_vars | json_query(query) }}"
+  with_items: "{{ __nextcloud_htaccess_vars | json_query(results_query) }}"
   vars:
-    query: "results[?rc == `1`].item"
+    results_query: "results[?rc == `1`].item"
 
 - name: Set PHP variables in .user.ini
   ansible.builtin.lineinfile:
