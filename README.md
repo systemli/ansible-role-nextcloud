@@ -27,12 +27,10 @@ has to be done separately.
 
 PHP dependencies required for Nextcloud are installed by that role.
 
-Some modules used in this role are new to Ansible 2.2 and it's tested with
-Ansible 2.2, 2.3 and 2.4.
+The role is tested with Ansible 2.4 and newer.
 
 The following preliminaries need to be met:
 
-* Ansible 2.2 or newer
 * Debian target system with the following requirements:
   * MariaDB/MySQL server with admin permissions (may be remote)
   * Webserver (e.g. Apache2/Nginx) with basic PHP support
@@ -153,7 +151,7 @@ Please beware that further configuration might be needed:
 
 ## Tests
 
-For developing and testing the role we use Github Actions, Molecule, and Vagrant. On the local environment you can easily test the role with
+For developing and testing the role we use Github Actions, Molecule, and Molecule. On the local environment you can easily test the role with
 
 Run local tests with:
 
@@ -161,7 +159,7 @@ Run local tests with:
 molecule test 
 ```
 
-Requires Molecule, Vagrant and `python-vagrant` to be installed.
+Requires Molecule and Docker to be installed.
 
 # License
 
