@@ -10,6 +10,7 @@ galaxy_info:
   platforms:
     - name: Debian
       versions:
+        - trixie
         - bookworm
 
 dependencies: []

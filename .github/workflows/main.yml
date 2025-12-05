@@ -16,4 +16,4 @@ jobs:
     uses: systemli/github-ansible-workflow/.github/workflows/ansible-integration-workflow.yaml@v1.6.0
     with:
       disable-apparmor-mysql: true
-      distros: '[ "debian12" ]'
+      distros: '[ "debian13", "debian12" ]'
