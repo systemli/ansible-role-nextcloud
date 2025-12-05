@@ -125,9 +125,8 @@ nextcloud_backup_dir: "/var/backups/nextcloud"
 nextcloud_dependencies:
   - acl # for ansible temp files
   - "{{ 'git' if nextcloud_src_type == 'git' else 'bzip2' }}"
-  - "{{ 'gpgv' if nextcloud_src_type == 'tar' else omit }}"
-  - "{{ 'libmagickcore-7.q16-10-extra' if ansible_distribution_major_version | int >= 13 else omit }}"
-  - "{{ 'libmagickcore-6.q16-6-extra' if ansible_distribution_major_version | int < 13 else omit }}"
+  - "{{ 'gpgv' if nextcloud_src_type == 'tar' }}"
+  - "{{ 'libmagickcore-7.q16-10-extra' if ansible_distribution_major_version | int >= 13 else 'libmagickcore-6.q16-6-extra' }}"
   - php-pear
   - php-apcu
   - php-bcmath
