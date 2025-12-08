@@ -177,4 +177,4 @@
   with_items:
     - "{{ nextcloud_configure_additional_commands }}"
   when:
-    - nextcloud_configure_additional_commands
+    - nextcloud_configure_additional_commands is defined
