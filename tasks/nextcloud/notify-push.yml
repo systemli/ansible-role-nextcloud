@@ -48,6 +48,10 @@
       name: notify_push
       nextcloud_path: "{{ nextcloud_instance }}"
       state: "{{ nextcloud_apps_upgrade | ternary('latest', 'enabled') }}"
+    delay: 15
+    register: __nextcloud_app_notify_push_installed
+    retries: 3
+    until: __nextcloud_app_notify_push_installed is not failed
 
   - name: Run handlers (restart webserver) before notify_push tests
     ansible.builtin.meta: flush_handlers
