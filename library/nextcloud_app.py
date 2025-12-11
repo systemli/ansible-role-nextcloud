@@ -185,7 +185,7 @@ def occ_command(module, occ_path, occ_command, occ_options='', occ_json=True):
 
 
 def app_store_fetch_json(module, url):
-    dest = "/tmp/ansible-nextcloud_app-apps.json"
+    dest = "/var/tmp/ansible-nextcloud_app-apps.json"
     content = None
     store_json = None
     use_local_file = False
