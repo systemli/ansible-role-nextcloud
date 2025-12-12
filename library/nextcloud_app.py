@@ -187,19 +187,32 @@ def occ_command(module, occ_path, occ_command, occ_options='', occ_json=True):
 def app_store_fetch_json(module, url):
     dest = "/var/tmp/ansible-nextcloud_app-apps.json"
     content = None
+    upstream_mtime = None
     store_json = None
     use_local_file = False
 
-    # Ugly json file caching: only fetch if local version is older two minutes.
-    # This is necessary as the module is often used in loops and the upstream
-    # webserver has rate limits implemented.
-    # A better solution would be to use the upstream ETag header, but up to
-    # now, the Ansible URL utils don't support ETag headers yet.
     if os.path.exists(dest):
         dest_mtime = datetime.fromtimestamp(os.path.getmtime(dest))
-        check_time = datetime.now() - timedelta(minutes=2)
+        check_time = datetime.now() - timedelta(minutes=10)
         if dest_mtime > check_time:
-            use_local_file = True
+            resp, info = fetch_url(module, url, method='HEAD')
+
+            if info['status'] != 200:
+                module.fail_json(msg="Failed to fetch url {0}: {1}".format(url, info['msg']))
+  
+            # The upstream ETag header looks like:
+            #   "2025-12-11 15:37:13.468895+00:00"
+            # Remove double quotes and limit precision to only keep seconds.
+            # Otherwise, the comparison of 'dest_mtime' and 'upstream_mtime'
+            # doesn't work, due to different precision.
+            etag = info['etag'].replace('"', '').split('.')[0]
+
+            # Cast to date object
+            upstream_mtime = datetime.fromisoformat(etag)
+
+            # Compare local and upstream file to only download if necessary.
+            if dest_mtime == upstream_mtime:
+                use_local_file = True
 
     if use_local_file:
         fd = open(dest, 'r')
@@ -223,10 +236,18 @@ def app_store_fetch_json(module, url):
             fd = open(dest, 'wb')
             try:
                 fd.write(content)
+                fd.close()
+
+                if upstream_mtime:
+                    # Convert to epoch
+                    file_mtime = upstream_mtime.timestamp()
+                    # Set mtime of the file: os.utime() requires a tuple of the
+                    # form (atime, mtime) where each member is an int or float
+                    # expressing seconds.
+                    os.utime(dest, (file_mtime, file_mtime))
             except Exception as e:
                 os.remove(dest)
                 module.fail_json(msg="Failed to write to file: {0}".format(to_native(e)))
-            fd.close()
 
     try:
         if isinstance(content, str):
