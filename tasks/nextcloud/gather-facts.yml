@@ -9,7 +9,7 @@
 
 - name: "Nextcloud facts: determine whether instance is to be installed"
   ansible.builtin.set_fact:
-    __nextcloud_do_install: "{{ __nextcloud_installed.stat.exists | ternary('no', 'yes') }}"
+    __nextcloud_do_install: "{{ not __nextcloud_installed.stat.exists }}"
 
 - name: "Nextcloud facts: get instance status if already installed"
   become: True
@@ -40,9 +40,10 @@
 
 - name: "Nextcloud facts: determine whether installation or upgrade"
   ansible.builtin.set_fact:
-    __nextcloud_do_upgrade: "{{ ((not __nextcloud_do_install)
-        and __nextcloud_version | default() and nextcloud_upgrade
-        and nextcloud_version is version(__nextcloud_version, '>')) | ternary('yes', 'no') }}"
+    __nextcloud_do_upgrade: "{{ (not __nextcloud_do_install)
+        and (__nextcloud_version is defined and __nextcloud_version != '')
+        and nextcloud_upgrade
+        and (nextcloud_version is version(__nextcloud_version, '>')) }}"
 
 - name: "Nextcloud facts: determine if config.php exists"
   ansible.builtin.stat:
