@@ -190,14 +190,14 @@ def app_store_fetch_json(module, url):
     store_json = None
     use_local_file = False
 
-    # Ugly json file caching: only fetch if local version is older two minutes.
+    # Ugly json file caching: only fetch if local version is older than 1 hour.
     # This is necessary as the module is often used in loops and the upstream
     # webserver has rate limits implemented.
     # A better solution would be to use the upstream ETag header, but up to
     # now, the Ansible URL utils don't support ETag headers yet.
     if os.path.exists(dest):
         dest_mtime = datetime.fromtimestamp(os.path.getmtime(dest))
-        check_time = datetime.now() - timedelta(minutes=2)
+        check_time = datetime.now() - timedelta(minutes=60)
         if dest_mtime > check_time:
             use_local_file = True
 
