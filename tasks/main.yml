@@ -137,7 +137,8 @@
 
 - name: Run apache-php tasks
   ansible.builtin.include_tasks: apache-php.yml
-  when: nextcloud_apache_php | default()
+  when:
+    - nextcloud_apache_php 
   tags:
     - role:nextcloud:apache
 

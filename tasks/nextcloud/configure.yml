@@ -14,7 +14,7 @@
     directory_mode: 0750
   when:
     - nextcloud_config.system.skeletondirectory is defined
-    - nextcloud_config.system.skeletondirectory != ''
+    - nextcloud_config.system.skeletondirectory != ""
 
 - name: "Nextcloud configure: copy theme"
   ansible.builtin.copy:
