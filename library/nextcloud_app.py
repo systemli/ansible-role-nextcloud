@@ -153,6 +153,8 @@ from datetime import datetime, timedelta
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.urls import fetch_url
 from ansible.module_utils._text import to_bytes, to_native
+from email import utils
+from pathlib import Path
 
 try:  # python 3.3+
     from shlex import quote
@@ -184,22 +186,52 @@ def occ_command(module, occ_path, occ_command, occ_options='', occ_json=True):
     return out
 
 
+def file_utime(dest, last_modified):
+    # The upstream Last-Modified header relies on the format as defined in RFC
+    # 2822 "Internet Message Format".
+    upstream_mtime_epoch = utils.parsedate_to_datetime(last_modified).timestamp()
+    # Update local file: set access time to the current time, and mtime as per upstream.
+    os.utime(dest, (datetime.now().timestamp(), upstream_mtime_epoch))
+
+
 def app_store_fetch_json(module, url):
-    dest = "/tmp/ansible-nextcloud_app-apps.json"
+    dest = Path('/var/tmp/ansible-nextcloud_app-apps.json')
     content = None
     store_json = None
     use_local_file = False
 
-    # Ugly json file caching: only fetch if local version is older than 1 hour.
-    # This is necessary as the module is often used in loops and the upstream
-    # webserver has rate limits implemented.
-    # A better solution would be to use the upstream ETag header, but up to
-    # now, the Ansible URL utils don't support ETag headers yet.
-    if os.path.exists(dest):
-        dest_mtime = datetime.fromtimestamp(os.path.getmtime(dest))
-        check_time = datetime.now() - timedelta(minutes=60)
-        if dest_mtime > check_time:
+    # Check if local file exists
+    if dest.is_file():
+        # Rely on local file, if it was accessed within the last 60 minutes
+        if datetime.now() - datetime.fromtimestamp(dest.stat().st_atime) < timedelta(minutes=60):
             use_local_file = True
+
+        # Otherwise, check for an update upstream
+        else:
+            # Parse the mtime epoch of local file to the format as defined in
+            # RFC 2822 "Internet Message Format", which the upstream
+            # 'Last-Modified' header relies on. Doing so allows to populate the
+            # 'If-Modified-Since' header as per below.
+            dest_mtime_rfc2822 = utils.formatdate(dest.stat().st_mtime, localtime=False, usegmt=True)
+
+            # HEAD requests are "cheap", compared to GET requests, which is why
+            # rate-limiting is relaxed for these.
+            # The 'If-Modified-Since' header makes the request conditional, to
+            # check the result as per below.
+            resp, info = fetch_url(module, url, headers={'If-Modified-Since': f"{dest_mtime_rfc2822}"}, method='HEAD')
+
+            # 304 Not Modified, no upstream update available: update atime and
+            # mtime of local file and rely on
+            if info['status'] == 304:
+                file_utime(dest, info['last-modified'])
+                use_local_file = True
+
+            # 200 OK, upstream update is available, ignore local file and download
+            elif info['status'] == 200:
+                use_local_file = False
+
+            else:
+                module.fail_json(msg="Failed to fetch url {0}: {1}".format(url, info['msg']))
 
     if use_local_file:
         fd = open(dest, 'r')
@@ -223,10 +255,12 @@ def app_store_fetch_json(module, url):
             fd = open(dest, 'wb')
             try:
                 fd.write(content)
+                fd.close()
+                file_utime(dest, info['last-modified'])
+        
             except Exception as e:
                 os.remove(dest)
                 module.fail_json(msg="Failed to write to file: {0}".format(to_native(e)))
-            fd.close()
 
     try:
         if isinstance(content, str):
