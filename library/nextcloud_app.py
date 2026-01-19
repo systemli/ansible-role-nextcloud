@@ -218,7 +218,7 @@ def app_store_fetch_json(module, url):
             # rate-limiting is relaxed for these.
             # The 'If-Modified-Since' header makes the request conditional, to
             # check the result as per below.
-            resp, info = fetch_url(module, url, headers={'If-Modified-Since': f"{dest_mtime_rfc2822}"}, method='HEAD')
+            resp, info = fetch_url(module, url, headers={'If-Modified-Since': f"{dest_mtime_rfc2822}"}, method='HEAD', timeout=120)
 
             # 304 Not Modified, no upstream update available: update atime and
             # mtime of local file and rely on
@@ -240,7 +240,7 @@ def app_store_fetch_json(module, url):
         except Exception as e:
             module.fail_json(msg="failed to read from file: {0}".format(to_native(e)))
     else:
-        resp, info = fetch_url(module, url, method='GET')
+        resp, info = fetch_url(module, url, method='GET', timeout=120)
 
         if info['status'] != 200:
             module.fail_json(msg="Failed to fetch url {0}: {1}".format(url, info['msg']))
