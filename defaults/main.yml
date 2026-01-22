@@ -1,6 +1,6 @@
 ---
 # Nextcloud version to install. Raise for upgrading.
-nextcloud_version: "31.0.11"
+nextcloud_version: "32.0.5"
 # Upgrade via Ansible? Set to `False` if upgrades are handled manually.
 # Make sure to set `nextcloud_instance` to something without `nextcloud_version`.
 nextcloud_upgrade: True
@@ -168,6 +168,8 @@ nextcloud_notify_push_max_connection_time: False
 nextcloud_notify_push_port: 7867
 # Uncomment to expose Nextcloud notify_push metrics
 # nextcloud_notify_push_metrics_port: 7868
+# Uncomment to set custom NEXTCLOUD_URL for notify_push
+# nextcloud_notify_push_nextcloud_url: http://cloud-internal.example.org/
 
 # Cleanup old nextcloud version folders
 nextcloud_cleanup_versions: True
