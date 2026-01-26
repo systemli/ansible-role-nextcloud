@@ -64,3 +64,4 @@
       chdir: "{{ nextcloud_webroot }}"
     changed_when: False
     check_mode: no
+    when: nextcloud_notify_push_self_test | bool
