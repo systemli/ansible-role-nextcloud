@@ -127,6 +127,30 @@ nextcloud_upgrade: False
 nextcloud_instance: "{{ nextcloud_workdir }}/nextcloud"
 ```
 
+# Cronjobs
+
+The role automatically creates a cron job for Nextcloud background tasks
+(`cron.php`) and optionally for automatic app updates.
+
+In addition, you can define custom cron jobs for Nextcloud `occ` commands
+using the `nextcloud_cronjobs` variable. Each entry only requires the `name`
+and `job` fields. The `job` field should contain only the occ subcommand
+and its arguments (the role prepends `php .../occ` and appends `>/dev/null`
+automatically). Schedule fields (`minute`, `hour`, `weekday`, `day`, `month`)
+default to `*`. Each entry also supports a `state` field (`present` or
+`absent`, defaults to `present`).
+
+```yaml
+nextcloud_cronjobs:
+  - name: "Nextcloud preview pre-generation"
+    minute: "*/10"
+    job: "preview:pre-generate"
+  - name: "Nextcloud file scan"
+    minute: "0"
+    hour: "2"
+    job: "files:scan --all"
+```
+
 # Notification push daemon support
 
 When `nextcloud_notify_push` is enabled, the [Nextcloud notify_push
