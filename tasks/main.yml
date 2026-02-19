@@ -125,6 +125,23 @@
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
+- name: Create Nextcloud occ cronjobs
+  ansible.builtin.cron:
+    name: "{{ item.name }}"
+    minute: "{{ item.minute | default('*') }}"
+    hour: "{{ item.hour | default('*') }}"
+    weekday: "{{ item.weekday | default('*') }}"
+    day: "{{ item.day | default('*') }}"
+    month: "{{ item.month | default('*') }}"
+    user: "{{ nextcloud_http_user }}"
+    job: "php {{ nextcloud_symlink }}/occ {{ item.job }} >/dev/null"
+    cron_file: nextcloud
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ nextcloud_cronjobs }}"
+  tags:
+    - role:nextcloud
+    - role:nextcloud:cron
+
 - name: Create Nextcloud logrotate rule
   ansible.builtin.template:
     src: nextcloud/nextcloud.logrotate.j2
