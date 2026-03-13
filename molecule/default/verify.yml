@@ -1,0 +1,20 @@
+---
+- name: Verify
+  hosts: all
+  become: True
+  vars:
+    nextcloud_version: "32.0.5"
+    nextcloud_workdir: "/var/www/nextcloud"
+    nextcloud_instance: "{{ nextcloud_workdir }}/nextcloud-{{ nextcloud_version }}"
+  tasks:
+    - name: Read patched robots.txt from Nextcloud instance
+      ansible.builtin.slurp:
+        src: "{{ nextcloud_instance }}/robots.txt"
+      register: __robots_txt
+
+    - name: Assert patch was applied to robots.txt
+      ansible.builtin.assert:
+        that:
+          - "'Patched by ansible-role-nextcloud' in (__robots_txt.content | b64decode)"
+        fail_msg: "Patch was not applied: robots.txt does not contain expected marker"
+        success_msg: "Patch was successfully applied to robots.txt"
