@@ -77,6 +77,16 @@
     - role:nextcloud:apps
   when: not __nextcloud_do_upgrade
 
+- name: Apply patches to Nextcloud
+  ansible.builtin.include_tasks: nextcloud/patches.yml
+  when:
+    - __nextcloud_do_install | bool or __nextcloud_do_upgrade | bool
+    - nextcloud_patches | length > 0
+  tags:
+    - role:nextcloud:install
+    - role:nextcloud:upgrade
+    - role:nextcloud:patches
+
 - name: Finalize Nextcloud instance
   ansible.builtin.include_tasks: nextcloud/finalize.yml
   when: __nextcloud_do_install | bool or __nextcloud_do_upgrade | bool
