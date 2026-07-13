@@ -1,7 +1,9 @@
 ---
 roles:
-  - systemli.mariadb
+  - name: systemli.mariadb
+    version: "1.4.1"
+
 collections:
-  - community.general
-  - ansible.mysql
-  - ansible.posix
+  - name: community.general
+  - name: ansible.mysql
+  - name: ansible.posix
