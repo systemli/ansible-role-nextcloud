@@ -1,0 +1,6 @@
+--- a/robots.txt
++++ b/robots.txt
+@@ -1,2 +1,3 @@
+ User-agent: *
+ Disallow: /
++# Patched by ansible-role-nextcloud

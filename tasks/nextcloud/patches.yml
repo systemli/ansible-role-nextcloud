@@ -1,0 +1,7 @@
+---
+- name: "Nextcloud patches: apply patch files"
+  ansible.posix.patch:
+    src: "nextcloud/patches/{{ item }}"
+    basedir: "{{ nextcloud_dl_tmp_dir }}/nextcloud"
+    strip: 1
+  loop: "{{ nextcloud_patches }}"
