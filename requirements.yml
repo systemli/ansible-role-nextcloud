@@ -1,7 +1,6 @@
 ---
 roles:
   - name: systemli.mariadb
-    version: "1.4.1"
 
 collections:
   - name: community.general
