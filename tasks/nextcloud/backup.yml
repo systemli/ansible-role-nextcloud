@@ -28,8 +28,7 @@
   args:
     creates: "{{ nextcloud_backup_data_dir }}"
   when:
-    - nextcloud_backup_data is defined
-    - nextcloud_backup_data != ""
+    - nextcloud_backup_data | bool
 
 - name: "Nextcloud backup: Verify backup"
   ansible.builtin.stat:
