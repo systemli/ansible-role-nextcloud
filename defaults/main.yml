@@ -41,6 +41,9 @@ nextcloud_config:
 #         for some core components of the framework (in `core`). These settings
 #         are stored in the database directly and require a correctly
 #         configured system to be accessed.
+#         Each app key is set with `occ config:app:set`, which keeps the type
+#         Nextcloud stores or defines for it (booleans accept true/false or
+#         "yes"/"no"). Set a key to `null` to delete it.
 #
 # For instance:
 # ```

@@ -11,3 +11,13 @@
     nextcloud_mysql_password: topsecret
     nextcloud_patches:
       - test-robots-txt.diff
+    nextcloud_config:
+      system:
+        memcache.local: '\OC\Memcache\APCu'
+        trusted_domains:
+          - localhost
+      apps:
+        core:
+          backgroundjobs_mode: cron
+        dav:
+          system_addressbook_exposed: "no"

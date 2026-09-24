@@ -61,14 +61,45 @@
   become: True
   become_user: "{{ nextcloud_http_user }}"
 
-- name: "Nextcloud configure: parse global preferences as json and merge configurations"
+- name: "Nextcloud configure: parse global preferences as json"
   ansible.builtin.set_fact:
-    __nextcloud_old_preferences:
-      "{{ __nextcloud_preferences.stdout | from_json }}"
-    __nextcloud_updated_preferences: >-
+    __nextcloud_old_preferences: "{{ __nextcloud_preferences.stdout | from_json }}"
+  no_log: True
+
+- name: "Nextcloud configure: merge system configuration and collect app settings"
+  ansible.builtin.set_fact:
+    __nextcloud_old_system: "{{ __nextcloud_old_preferences.system | default({}) }}"
+    __nextcloud_updated_system: >-
       {{
-        __nextcloud_preferences.stdout | from_json | combine(nextcloud_config, recursive=True)
+        __nextcloud_old_preferences.system | default({})
+        | combine(nextcloud_config.system | default({}, true), recursive=True)
       }}
+    # Flatten nextcloud_config.apps into a list of {app, key, value, changed}.
+    # `value` is the string passed to `occ config:app:set` (None means delete).
+    # Values are compared as strings, since `config:list` returns typed keys
+    # as JSON booleans/integers and untyped ones as strings.
+    __nextcloud_app_settings: >-
+      {%- set ns = namespace(settings=[]) -%}
+      {%- for app, keys in (nextcloud_config.apps | default({}, true)).items() -%}
+      {%-   set current = (__nextcloud_old_preferences.apps | default({}, true)).get(app) or {} -%}
+      {%-   for key, value in (keys or {}).items() -%}
+      {%-     if value is none -%}
+      {%-       set arg = none -%}
+      {%-       set changed = key in current -%}
+      {%-     else -%}
+      {%-       set arg = (value | ternary('true', 'false')) if value is boolean else (value | string) -%}
+      {%-       if key not in current -%}
+      {%-         set changed = true -%}
+      {%-       elif current[key] is boolean -%}
+      {%-         set changed = (arg | lower) not in (['true', '1', 'on', 'yes'] if current[key] else ['false', '0', 'off', 'no']) -%}
+      {%-       else -%}
+      {%-         set changed = (current[key] | string) != arg -%}
+      {%-       endif -%}
+      {%-     endif -%}
+      {%-     set ns.settings = ns.settings + [{'app': app, 'key': key, 'value': arg, 'changed': changed}] -%}
+      {%-   endfor -%}
+      {%- endfor -%}
+      {{ ns.settings }}
   no_log: True
 
 - name: "Nextcloud configure: Get Nextcloud instanceid"
@@ -82,8 +113,8 @@
   ansible.builtin.assert:
     that: __nextcloud_instanceid | length > 0
 
-- name: "Nextcloud configure: configure nextcloud and apps"
-  when: __nextcloud_updated_preferences != __nextcloud_old_preferences
+- name: "Nextcloud configure: configure nextcloud system"
+  when: __nextcloud_updated_system != __nextcloud_old_system
   block:
     - name: "Nextcloud configure: create temporary config file"
       ansible.builtin.tempfile:
@@ -91,9 +122,11 @@
       register: __nextcloud_preferences
       check_mode: False
 
+    # Only system config goes through config:import. It rejects booleans for
+    # app config and conflicts with app keys that have a strict type.
     - name: "Nextcloud configure: save config to file"
       ansible.builtin.copy:
-        content: "{{ nextcloud_config | to_json }}"
+        content: "{{ {'system': nextcloud_config.system} | to_json }}"
         dest: "{{ __nextcloud_preferences.path }}"
         owner: "{{ nextcloud_http_user }}"
         group: "{{ nextcloud_http_group }}"
@@ -109,7 +142,7 @@
 
     - name: "Nextcloud configure: save config to diff file"
       ansible.builtin.copy:
-        content: "{{ __nextcloud_old_preferences | to_nice_yaml }}"
+        content: "{{ __nextcloud_old_system | to_nice_yaml }}"
         dest: "{{ __nextcloud_preferences_diff.path }}"
         owner: "{{ nextcloud_http_user }}"
         group: "{{ nextcloud_http_group }}"
@@ -119,14 +152,14 @@
 
     - name: "Nextcloud configure: save updated config to file"
       ansible.builtin.copy:
-        content: "{{ __nextcloud_updated_preferences | to_nice_yaml }}"
+        content: "{{ __nextcloud_updated_system | to_nice_yaml }}"
         dest: "{{ __nextcloud_preferences_diff.path }}"
         owner: "{{ nextcloud_http_user }}"
         group: "{{ nextcloud_http_group }}"
         mode: 0o400
       check_mode: True
 
-    - name: "Nextcloud configure: set up global preferences"
+    - name: "Nextcloud configure: set up system preferences"
       ansible.builtin.command: php occ config:import "{{ __nextcloud_preferences.path }}"
       args:
         chdir: "{{ __nextcloud_install_dir }}"
@@ -139,8 +172,6 @@
       failed_when: (__nextcloud_result.stdout is not search('successfully imported')
         or __nextcloud_result is failed)
 
-    # - meta: flush_handlers
-
     - name: "Nextcloud configure: delete temporary config files"
       ansible.builtin.file:
         path: "{{ item }}"
@@ -149,6 +180,44 @@
         - "{{ __nextcloud_preferences.path }}"
         - "{{ __nextcloud_preferences_diff.path }}"
       check_mode: False
+
+# Without --type, config:app:set keeps the type Nextcloud has stored (or
+# defined in the app's config lexicon) for the key, so typed keys don't conflict.
+- name: "Nextcloud configure: set app preferences"
+  ansible.builtin.command:
+    argv:
+      - php
+      - occ
+      - config:app:set
+      - --no-interaction
+      - "{{ item.app }}"
+      - "{{ item.key }}"
+      - "--value={{ item.value }}"
+  args:
+    chdir: "{{ __nextcloud_install_dir }}"
+  become: True
+  become_user: "{{ nextcloud_http_user }}"
+  changed_when: True
+  loop: "{{ __nextcloud_app_settings | selectattr('changed') | rejectattr('value', 'none') | list }}"
+  loop_control:
+    label: "{{ item.app }} {{ item.key }}"
+
+- name: "Nextcloud configure: delete app preferences"
+  ansible.builtin.command:
+    argv:
+      - php
+      - occ
+      - config:app:delete
+      - "{{ item.app }}"
+      - "{{ item.key }}"
+  args:
+    chdir: "{{ __nextcloud_install_dir }}"
+  become: True
+  become_user: "{{ nextcloud_http_user }}"
+  changed_when: True
+  loop: "{{ __nextcloud_app_settings | selectattr('changed') | selectattr('value', 'none') | list }}"
+  loop_control:
+    label: "{{ item.app }} {{ item.key }}"
 
 # the theming app is not compatible with using the old theming way above
 - name: Copy images for theming app
