@@ -1,9 +1,8 @@
 ---
-
 - name: Enable apc cache in PHP commandline
   ansible.builtin.copy:
     src: php/apc.ini
     dest: /etc/php/{{ nextcloud_php_version }}/cli/conf.d/apcu.ini
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"

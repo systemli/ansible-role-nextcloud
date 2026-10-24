@@ -1,7 +1,7 @@
 ---
 - name: Verify
   hosts: all
-  become: True
+  become: true
   vars:
     nextcloud_version: "32.0.5"
     nextcloud_workdir: "/var/www/nextcloud"

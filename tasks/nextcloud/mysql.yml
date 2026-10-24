@@ -1,5 +1,4 @@
 ---
-
 - name: Create Nextcloud MySQL database
   ansible.mysql.mysql_db:
     name: "{{ nextcloud_mysql_db }}"

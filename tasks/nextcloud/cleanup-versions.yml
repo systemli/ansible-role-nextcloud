@@ -1,5 +1,4 @@
 ---
-
 - name: Get link destination of nextcloud_symlink
   ansible.builtin.stat:
     path: "{{ nextcloud_symlink }}"
@@ -10,8 +9,8 @@
     paths: "{{ nextcloud_workdir }}"
     file_type: directory
     excludes: "{{ __nextcloud_symlink.stat.lnk_target }},nextcloud-{{ nextcloud_version }}"
-    patterns: '^nextcloud-[0-9]+\.[0-9]+\.[0-9]+$'
-    use_regex: True
+    patterns: "^nextcloud-[0-9]+\\.[0-9]+\\.[0-9]+$"
+    use_regex: true
   register: __nextcloud_version_folders
 
 - name: "Remove old version directories except last {{ nextcloud_cleanup_versions_keep }}"
