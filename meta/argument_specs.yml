@@ -1,0 +1,243 @@
+---
+argument_specs:
+  main:
+    short_description: Install, configure and upgrade Nextcloud
+    description:
+      - Installs Nextcloud from a release tarball or git, configures it (system and app settings, apps, cron jobs, optional notify_push) and handles upgrades and backups.
+      - Nextcloud is expected to be served by apache2 or nginx with PHP and MariaDB/MySQL.
+    options:
+      nextcloud_version:
+        type: str
+        description:
+          - Nextcloud version to install. Raise for upgrading.
+      nextcloud_upgrade:
+        type: bool
+        description:
+          - Upgrade via Ansible? Set to false if upgrades are handled manually. Make sure to set C(nextcloud_instance) to something without C(nextcloud_version) then.
+      nextcloud_workdir:
+        type: path
+        description:
+          - Path to the Nextcloud workdir holding Nextcloud instances.
+      nextcloud_instance:
+        type: path
+        description:
+          - Path to the current Nextcloud instance.
+      nextcloud_symlink:
+        type: path
+        description:
+          - Path to the symlink pointing to the current Nextcloud instance.
+      nextcloud_webroot:
+        type: path
+      nextcloud_data_dir:
+        type: path
+        description:
+          - Path to the Nextcloud data directory.
+      nextcloud_config:
+        type: dict
+        description:
+          - Nextcloud configuration with the keys C(system) (written to C(config.php)) and C(apps) (app settings set with C(occ config:app:set), a mapping of app name to a mapping of key to value, C(null) deletes a key). Both are optional.
+        options:
+          system:
+            type: dict
+          apps:
+            type: dict
+      nextcloud_webserver:
+        type: str
+        choices:
+          - apache2
+          - nginx
+          - none
+        description:
+          - 'Supported values: apache2, nginx, none'
+      nextcloud_php_version:
+        type: str
+      nextcloud_php_settings:
+        type: dict
+        description:
+          - Custom PHP settings (for example file size limits) as key/value pairs.
+      nextcloud_http_user:
+        type: str
+        description:
+          - Nextcloud system, MySQL and web user settings
+      nextcloud_http_group:
+        type: str
+      nextcloud_mysql_user:
+        type: str
+      nextcloud_mysql_user_host:
+        type: str
+      nextcloud_mysql_db:
+        type: str
+      nextcloud_mysql_host:
+        type: str
+      nextcloud_mysql_host_delegate:
+        type: str
+      nextcloud_admin_user:
+        type: str
+      nextcloud_www_alias:
+        type: bool
+        description:
+          - Currently not used by the role.
+      nextcloud_www_alias_name:
+        type: str
+        description:
+          - Currently not used by the role.
+      nextcloud_custom_apps:
+        type: list
+        elements: str
+        description:
+          - Custom apps which should be copied from the playbook directory C(files/nextcloud/apps/) to the instance apps directory and enabled.
+      nextcloud_apps:
+        type: list
+        elements: str
+        description:
+          - Apps to install/enable.
+      nextcloud_apps_disabled:
+        type: list
+        elements: str
+        description:
+          - Apps to disable.
+      nextcloud_apps_upgrade:
+        type: bool
+        description:
+          - Upgrade Nextcloud apps?
+      nextcloud_src_type:
+        type: str
+        choices:
+          - git
+          - tar
+        description:
+          - How to install Nextcloud.
+      nextcloud_repo:
+        type: str
+        description:
+          - The Git repository holding Nextcloud server
+      nextcloud_tar_url:
+        type: str
+        description:
+          - The URL for Nextcloud release tarballs and signatures
+      nextcloud_sig_url:
+        type: str
+      nextcloud_gpg_key:
+        type: str
+        description:
+          - The Nextcloud upstream GPG key used for signing.
+      nextcloud_backup:
+        type: bool
+        description:
+          - Backup the Nextcloud instance before upgrade?
+      nextcloud_backup_data:
+        type: bool
+      nextcloud_backup_dir:
+        type: path
+      nextcloud_dependencies:
+        type: list
+        elements: str
+        description:
+          - Dependencies (Debian packages) to install
+      nextcloud_dependencies_python:
+        type: list
+        elements: str
+      nextcloud_configure_additional_commands:
+        type: list
+        elements: str
+        description:
+          - Additional commands to run at the end of configure.yml, for example C(php occ config:app:set files_sharing incoming_server2server_share_enabled --value=true --type=boolean).
+      nextcloud_patches:
+        type: list
+        elements: str
+        description:
+          - Patch files (.diff) from the playbook directory C(files/nextcloud/patches/) applied to the Nextcloud server root after installation or upgrade, in list order (strip=1).
+      nextcloud_notify_push:
+        type: bool
+        description:
+          - Install the Nextcloud push notification daemon?
+      nextcloud_notify_push_version:
+        type: str
+      nextcloud_notify_push_url:
+        type: str
+      nextcloud_notify_push_allow_self_signed:
+        type: bool
+      nextcloud_notify_push_max_connection_time:
+        type: raw
+        description:
+          - Maximum connection time of the notify_push daemon, or false to not set it.
+      nextcloud_notify_push_self_test:
+        type: bool
+      nextcloud_notify_push_port:
+        type: int
+        description:
+          - Port for the Nextcloud notify_push daemon.
+      nextcloud_cleanup_versions:
+        type: bool
+        description:
+          - Cleanup old Nextcloud version folders?
+      nextcloud_cleanup_versions_keep:
+        type: int
+      nextcloud_app_update_cronjob:
+        type: bool
+        description:
+          - Configure automatic app updates via cron.
+      nextcloud_app_update_cronjob_weekday:
+        type: str
+      nextcloud_cronjobs:
+        type: list
+        elements: dict
+        description:
+          - Additional occ cronjobs.
+        options:
+          name:
+            type: str
+            required: true
+          job:
+            type: str
+            required: true
+            description:
+              - occ command with arguments.
+          minute:
+            type: str
+            description:
+              - Defaults to C(*).
+          hour:
+            type: str
+            description:
+              - Defaults to C(*).
+          weekday:
+            type: str
+            description:
+              - Defaults to C(*).
+          day:
+            type: str
+            description:
+              - Defaults to C(*).
+          month:
+            type: str
+            description:
+              - Defaults to C(*).
+          state:
+            type: str
+            choices:
+              - present
+              - absent
+            description:
+              - Defaults to C(present).
+      nextcloud_mysql_password:
+        type: str
+        required: true
+        description:
+          - Password of the Nextcloud database user.
+      nextcloud_admin_password:
+        type: str
+        description:
+          - Password of the initial Nextcloud admin user. Required for a fresh installation only.
+      nextcloud_notify_push_bind:
+        type: str
+        description:
+          - Address to bind the notify_push daemon to, for example C(127.0.0.1).
+      nextcloud_notify_push_metrics_port:
+        type: int
+        description:
+          - Port to expose notify_push metrics on.
+      nextcloud_notify_push_nextcloud_url:
+        type: str
+        description:
+          - Custom C(NEXTCLOUD_URL) for notify_push.
