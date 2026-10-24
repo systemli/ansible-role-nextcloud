@@ -27,8 +27,6 @@ has to be done separately.
 
 PHP dependencies required for Nextcloud are installed by that role.
 
-The role is tested with Ansible 2.4 and newer.
-
 The following preliminaries need to be met:
 
 * Debian target system with the following requirements:
@@ -175,15 +173,19 @@ Please beware that further configuration might be needed:
 
 ## Tests
 
-For developing and testing the role we use Github Actions, Molecule, and Molecule. On the local environment you can easily test the role with
+For developing and testing the role we use GitHub Actions and Molecule with
+the Docker driver. CI tests the role on Debian 12 (bookworm) and Debian 13
+(trixie), the platforms listed in `meta/main.yml`.
 
 Run local tests with:
 
 ```
-molecule test 
+molecule test
 ```
 
-Requires Molecule and Docker to be installed.
+Requires Molecule (with the Docker driver, `molecule-plugins[docker]`) and
+Docker to be installed. The role dependencies from `requirements.yml` are
+needed as well.
 
 # License
 

@@ -1,7 +1,7 @@
 ---
 - name: Converge
   hosts: all
-  become: True
+  become: true
   roles:
     - role: systemli.mariadb
     - role: ansible-role-nextcloud

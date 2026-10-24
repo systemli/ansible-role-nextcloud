@@ -1,13 +1,13 @@
 ---
 - name: Prepare
   hosts: all
-  become: True
+  become: true
   tasks:
     - name: Run the equivalent of "apt-get update" before installing packages
       apt:
-        update_cache: yes
+        update_cache: true
 
     - name: Install cron for testing in docker containers
       apt:
         pkg: cron
-        update_cache: yes
+        update_cache: true
