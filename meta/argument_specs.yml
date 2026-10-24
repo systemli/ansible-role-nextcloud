@@ -10,44 +10,32 @@ argument_specs:
         type: str
         description:
           - Nextcloud version to install. Raise for upgrading.
-        default: 32.0.5
       nextcloud_upgrade:
         type: bool
         description:
           - Upgrade via Ansible? Set to false if upgrades are handled manually. Make sure to set C(nextcloud_instance) to something without C(nextcloud_version) then.
-        default: true
       nextcloud_workdir:
         type: path
         description:
           - Path to the Nextcloud workdir holding Nextcloud instances.
-        default: /var/www/nextcloud
       nextcloud_instance:
         type: path
         description:
           - Path to the current Nextcloud instance.
-        default: '{{ nextcloud_workdir }}/nextcloud-{{ nextcloud_version }}'
       nextcloud_symlink:
         type: path
         description:
           - Path to the symlink pointing to the current Nextcloud instance.
-        default: '{{ nextcloud_workdir }}/nextcloud-current'
       nextcloud_webroot:
         type: path
-        default: '{{ nextcloud_symlink }}'
       nextcloud_data_dir:
         type: path
         description:
           - Path to the Nextcloud data directory.
-        default: /srv/nextcloud/data
       nextcloud_config:
         type: dict
         description:
           - Nextcloud configuration with the keys C(system) (written to C(config.php)) and C(apps) (app settings set with C(occ config:app:set), a mapping of app name to a mapping of key to value, C(null) deletes a key). Both are optional.
-        default:
-          system:
-            memcache.local: \OC\Memcache\APCu
-            trusted_domains:
-              - localhost
         options:
           system:
             type: dict
@@ -61,77 +49,57 @@ argument_specs:
           - none
         description:
           - 'Supported values: apache2, nginx, none'
-        default: apache2
       nextcloud_php_version:
         type: str
-        default: '{{ ''8.4'' if ansible_distribution_major_version | int >= 13 else ''8.2'' }}'
       nextcloud_php_settings:
         type: dict
         description:
           - Custom PHP settings (for example file size limits) as key/value pairs.
-        default:
-          upload_max_filesize: 511M
-          post_max_size: 511M
-          memory_limit: 512M
       nextcloud_http_user:
         type: str
         description:
           - Nextcloud system, MySQL and web user settings
-        default: www-data
       nextcloud_http_group:
         type: str
-        default: www-data
       nextcloud_mysql_user:
         type: str
-        default: nextcloud
       nextcloud_mysql_user_host:
         type: str
-        default: localhost
       nextcloud_mysql_db:
         type: str
-        default: nextcloud
       nextcloud_mysql_host:
         type: str
-        default: localhost
       nextcloud_mysql_host_delegate:
         type: str
-        default: '{{ inventory_hostname }}'
       nextcloud_admin_user:
         type: str
-        default: admin
       nextcloud_www_alias:
         type: bool
         description:
           - Currently not used by the role.
-        default: true
       nextcloud_www_alias_name:
         type: str
         description:
           - Currently not used by the role.
-        default: nextcloud
       nextcloud_custom_apps:
         type: list
         elements: str
         description:
           - Custom apps which should be copied from the playbook directory C(files/nextcloud/apps/) to the instance apps directory and enabled.
-        default: []
       nextcloud_apps:
         type: list
         elements: str
         description:
           - Apps to install/enable.
-        default: []
       nextcloud_apps_disabled:
         type: list
         elements: str
         description:
           - Apps to disable.
-        default: []
       nextcloud_apps_upgrade:
         type: bool
         description:
           - Upgrade Nextcloud apps?
-        default: false
       nextcloud_src_type:
         type: str
         choices:
@@ -139,129 +107,83 @@ argument_specs:
           - tar
         description:
           - How to install Nextcloud.
-        default: tar
       nextcloud_repo:
         type: str
         description:
           - The Git repository holding Nextcloud server
-        default: https://github.com/nextcloud/server
       nextcloud_tar_url:
         type: str
         description:
           - The URL for Nextcloud release tarballs and signatures
-        default: https://download.nextcloud.com/server/releases/nextcloud-{{ nextcloud_version }}.tar.bz2
       nextcloud_sig_url:
         type: str
-        default: '{{ nextcloud_tar_url }}.asc'
       nextcloud_gpg_key:
         type: str
         description:
           - The Nextcloud upstream GPG key used for signing.
-        default: 28806A878AE423A28372792ED75899B9A724937A
       nextcloud_backup:
         type: bool
         description:
           - Backup the Nextcloud instance before upgrade?
-        default: true
       nextcloud_backup_data:
         type: bool
-        default: false
       nextcloud_backup_dir:
         type: path
-        default: /var/backups/nextcloud
       nextcloud_dependencies:
         type: list
         elements: str
         description:
           - Dependencies (Debian packages) to install
-        default:
-          - acl
-          - '{{ ''git'' if nextcloud_src_type == ''git'' else ''bzip2'' }}'
-          - '{{ ''gpgv'' if nextcloud_src_type == ''tar'' }}'
-          - patch
-          - '{{ ''libmagickcore-7.q16-10-extra'' if ansible_distribution_major_version | int >= 13 else ''libmagickcore-6.q16-6-extra'' }}'
-          - php-pear
-          - php-apcu
-          - php-bcmath
-          - php-bz2
-          - php-curl
-          - php-gd
-          - php-gmp
-          - php-imagick
-          - php-intl
-          - php-json
-          - php-ldap
-          - php-mbstring
-          - php-mysql
-          - php-xml
-          - php-zip
       nextcloud_dependencies_python:
         type: list
         elements: str
-        default:
-          - '{{ ''python3'' if ansible_python.version.major | int == 3 else ''python'' }}-mysqldb'
-          - '{{ ''python3'' if ansible_python.version.major | int == 3 else ''python'' }}-semantic-version'
       nextcloud_configure_additional_commands:
         type: list
         elements: str
         description:
           - Additional commands to run at the end of configure.yml, for example C(php occ config:app:set files_sharing incoming_server2server_share_enabled --value=true --type=boolean).
-        default: []
       nextcloud_patches:
         type: list
         elements: str
         description:
           - Patch files (.diff) from the playbook directory C(files/nextcloud/patches/) applied to the Nextcloud server root after installation or upgrade, in list order (strip=1).
-        default: []
       nextcloud_notify_push:
         type: bool
         description:
           - Install the Nextcloud push notification daemon?
-        default: false
       nextcloud_notify_push_version:
         type: str
-        default: latest
       nextcloud_notify_push_url:
         type: str
-        default: https://github.com/nextcloud/notify_push/releases/download/v{{ nextcloud_notify_push_version }}/notify_push-x86_64-unknown-linux-musl
       nextcloud_notify_push_allow_self_signed:
         type: bool
-        default: false
       nextcloud_notify_push_max_connection_time:
         type: raw
         description:
           - Maximum connection time of the notify_push daemon, or false to not set it.
-        default: false
       nextcloud_notify_push_self_test:
         type: bool
-        default: true
       nextcloud_notify_push_port:
         type: int
         description:
           - Port for the Nextcloud notify_push daemon.
-        default: 7867
       nextcloud_cleanup_versions:
         type: bool
         description:
           - Cleanup old Nextcloud version folders?
-        default: true
       nextcloud_cleanup_versions_keep:
         type: int
-        default: 4
       nextcloud_app_update_cronjob:
         type: bool
         description:
           - Configure automatic app updates via cron.
-        default: true
       nextcloud_app_update_cronjob_weekday:
         type: str
-        default: 1,3,5
       nextcloud_cronjobs:
         type: list
         elements: dict
         description:
           - Additional occ cronjobs.
-        default: []
         options:
           name:
             type: str
