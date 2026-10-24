@@ -1,8 +1,9 @@
 ---
-
 - name: "Nextcloud configure: set Nextcloud directory"
   ansible.builtin.set_fact:
-    __nextcloud_install_dir: "{{ nextcloud_dl_tmp_dir + '/nextcloud' if (__nextcloud_do_install | bool or __nextcloud_do_upgrade | bool) else nextcloud_instance }}"
+    __nextcloud_install_dir: "{{ nextcloud_dl_tmp_dir + '/nextcloud'
+      if (__nextcloud_do_install | bool or __nextcloud_do_upgrade | bool)
+      else nextcloud_instance }}"
 
 - name: "Nextcloud configure: copy skeleton directory"
   ansible.builtin.copy:
@@ -10,8 +11,8 @@
     dest: "{{ nextcloud_config.system.skeletondirectory }}"
     owner: "{{ nextcloud_http_user }}"
     group: "{{ nextcloud_http_group }}"
-    mode: 0640
-    directory_mode: 0750
+    mode: "0640"
+    directory_mode: "0750"
   when:
     - nextcloud_config.system.skeletondirectory is defined
     - nextcloud_config.system.skeletondirectory != ""
@@ -22,8 +23,8 @@
     dest: "{{ __nextcloud_install_dir }}/themes/"
     owner: "{{ nextcloud_http_user }}"
     group: "{{ nextcloud_http_group }}"
-    mode: 0640
-    directory_mode: 0750
+    mode: "0640"
+    directory_mode: "0750"
   when: nextcloud_config.system.theme is defined
 
 - name: "Nextcloud configure: copy custom apps"
@@ -32,13 +33,13 @@
     dest: "{{ __nextcloud_install_dir }}/apps/"
     owner: "{{ nextcloud_http_user }}"
     group: "{{ nextcloud_http_group }}"
-    mode: 0640
-    directory_mode: 0750
+    mode: "0640"
+    directory_mode: "0750"
   with_items:
     - "{{ nextcloud_custom_apps }}"
 
 - name: "Nextcloud configure: enable custom apps"
-  become: True
+  become: true
   become_user: "{{ nextcloud_http_user }}"
   nextcloud_app:
     name: "{{ item }}"
@@ -55,16 +56,16 @@
   args:
     chdir: "{{ __nextcloud_install_dir }}"
   register: __nextcloud_preferences
-  changed_when: False
-  check_mode: False
-  no_log: True
-  become: True
+  changed_when: false
+  check_mode: false
+  no_log: true
+  become: true
   become_user: "{{ nextcloud_http_user }}"
 
 - name: "Nextcloud configure: parse global preferences as json"
   ansible.builtin.set_fact:
     __nextcloud_old_preferences: "{{ __nextcloud_preferences.stdout | from_json }}"
-  no_log: True
+  no_log: true
 
 - name: "Nextcloud configure: merge system configuration and collect app settings"
   ansible.builtin.set_fact:
@@ -100,14 +101,14 @@
       {%-   endfor -%}
       {%- endfor -%}
       {{ ns.settings }}
-  no_log: True
+  no_log: true
 
 - name: "Nextcloud configure: Get Nextcloud instanceid"
   ansible.builtin.set_fact:
     __nextcloud_instanceid: "{{ __nextcloud_old_preferences.system.instanceid }}"
-  changed_when: False
-  check_mode: False
-  no_log: True
+  changed_when: false
+  check_mode: false
+  no_log: true
 
 - name: "Nextcloud configure: Assert we have an instance id"
   ansible.builtin.assert:
@@ -120,7 +121,7 @@
       ansible.builtin.tempfile:
         suffix: nextcloud
       register: __nextcloud_preferences
-      check_mode: False
+      check_mode: false
 
     # Only system config goes through config:import. It rejects booleans for
     # app config and conflicts with app keys that have a strict type.
@@ -130,15 +131,15 @@
         dest: "{{ __nextcloud_preferences.path }}"
         owner: "{{ nextcloud_http_user }}"
         group: "{{ nextcloud_http_group }}"
-        mode: 0o400
-      no_log: True
-      check_mode: False
+        mode: "0o400"
+      no_log: true
+      check_mode: false
 
     - name: "Nextcloud configure: create temporary config diff file"
       ansible.builtin.tempfile:
         suffix: nextcloud
       register: __nextcloud_preferences_diff
-      check_mode: False
+      check_mode: false
 
     - name: "Nextcloud configure: save config to diff file"
       ansible.builtin.copy:
@@ -146,9 +147,9 @@
         dest: "{{ __nextcloud_preferences_diff.path }}"
         owner: "{{ nextcloud_http_user }}"
         group: "{{ nextcloud_http_group }}"
-        mode: 0o400
-      no_log: True
-      check_mode: False
+        mode: "0o400"
+      no_log: true
+      check_mode: false
 
     - name: "Nextcloud configure: save updated config to file"
       ansible.builtin.copy:
@@ -156,21 +157,20 @@
         dest: "{{ __nextcloud_preferences_diff.path }}"
         owner: "{{ nextcloud_http_user }}"
         group: "{{ nextcloud_http_group }}"
-        mode: 0o400
-      check_mode: True
+        mode: "0o400"
+      check_mode: true
 
     - name: "Nextcloud configure: set up system preferences"
       ansible.builtin.command: php occ config:import "{{ __nextcloud_preferences.path }}"
       args:
         chdir: "{{ __nextcloud_install_dir }}"
-      become: True
+      become: true
       become_user: "{{ nextcloud_http_user }}"
       register: __nextcloud_result
       changed_when: __nextcloud_result is success
       # TODO: we should switch to an htaccess handler as well
       # notify: nextcloud update htaccess
-      failed_when: (__nextcloud_result.stdout is not search('successfully imported')
-        or __nextcloud_result is failed)
+      failed_when: (__nextcloud_result.stdout is not search('successfully imported') or __nextcloud_result is failed)
 
     - name: "Nextcloud configure: delete temporary config files"
       ansible.builtin.file:
@@ -179,7 +179,7 @@
       with_items:
         - "{{ __nextcloud_preferences.path }}"
         - "{{ __nextcloud_preferences_diff.path }}"
-      check_mode: False
+      check_mode: false
 
 # Without --type, config:app:set keeps the type Nextcloud has stored (or
 # defined in the app's config lexicon) for the key, so typed keys don't conflict.
@@ -195,9 +195,9 @@
       - "--value={{ item.value }}"
   args:
     chdir: "{{ __nextcloud_install_dir }}"
-  become: True
+  become: true
   become_user: "{{ nextcloud_http_user }}"
-  changed_when: True
+  changed_when: true
   loop: "{{ __nextcloud_app_settings | selectattr('changed') | rejectattr('value', 'none') | list }}"
   loop_control:
     label: "{{ item.app }} {{ item.key }}"
@@ -212,9 +212,9 @@
       - "{{ item.key }}"
   args:
     chdir: "{{ __nextcloud_install_dir }}"
-  become: True
+  become: true
   become_user: "{{ nextcloud_http_user }}"
-  changed_when: True
+  changed_when: true
   loop: "{{ __nextcloud_app_settings | selectattr('changed') | selectattr('value', 'none') | list }}"
   loop_control:
     label: "{{ item.app }} {{ item.key }}"
@@ -226,7 +226,7 @@
     dest: "{{ nextcloud_data_dir }}/appdata_{{ __nextcloud_instanceid }}/theming/images/"
     owner: "{{ nextcloud_http_user }}"
     group: "{{ nextcloud_http_group }}"
-    mode: 0644
+    mode: "0644"
   with_fileglob:
     - "nextcloud/theming/images/{{ ansible_fqdn }}/*"
     - "nextcloud/theming/images/*"
@@ -240,9 +240,9 @@
   ansible.builtin.command: "{{ item }}"
   args:
     chdir: "{{ __nextcloud_install_dir }}"
-  become: True
+  become: true
   become_user: "{{ nextcloud_http_user }}"
-  changed_when: False
+  changed_when: false
   with_items:
     - "{{ nextcloud_configure_additional_commands }}"
   when:

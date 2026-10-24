@@ -1,67 +1,65 @@
 ---
-
 - name: Install nextcloud app notify_push
   tags:
     - role:nextcloud:notify_push
   block:
+    - name: Determine latest Nextcloud notify_push version
+      ansible.builtin.uri:
+        url: https://github.com/nextcloud/notify_push/releases/latest
+      check_mode: false
+      register: __nextcloud_notify_push_latest_uri
+      when: nextcloud_notify_push_version == 'latest'
 
-  - name: Determine latest Nextcloud notify_push version
-    ansible.builtin.uri:
-      url: https://github.com/nextcloud/notify_push/releases/latest
-    check_mode: False
-    register: __nextcloud_notify_push_latest_uri
-    when: nextcloud_notify_push_version == 'latest'
+    - name: Set fact for nextcloud_notify_push_version
+      ansible.builtin.set_fact:
+        nextcloud_notify_push_version: "{{ __nextcloud_notify_push_latest_uri.url.split('/') | last | regex_replace('v', '') }}"
+      when: nextcloud_notify_push_version == 'latest'
 
-  - name: Set fact for nextcloud_notify_push_version
-    ansible.builtin.set_fact:
-      nextcloud_notify_push_version: "{{ __nextcloud_notify_push_latest_uri.url.split('/') | last | regex_replace('v', '') }}"
-    when: nextcloud_notify_push_version == 'latest'
+    - name: Install Nextcloud notify_push daemon binary
+      ansible.builtin.get_url:
+        url: "{{ nextcloud_notify_push_url }}"
+        dest: /usr/local/bin/notify_push
+        owner: root
+        group: root
+        mode: "0755"
+      notify: Restart nextcloud-notify-push
 
-  - name: Install Nextcloud notify_push daemon binary
-    ansible.builtin.get_url:
-      url: "{{ nextcloud_notify_push_url }}"
-      dest: /usr/local/bin/notify_push
-      owner: root
-      group: root
-      mode: 0755
-    notify: Restart nextcloud-notify-push
+    - name: Install Nextcloud notify_push daemon systemd unit file
+      ansible.builtin.template:
+        src: systemd/nextcloud-notify-push.service.j2
+        dest: /etc/systemd/system/nextcloud-notify-push.service
+        owner: root
+        group: root
+        mode: "0644"
 
-  - name: Install Nextcloud notify_push daemon systemd unit file
-    ansible.builtin.template:
-      src: systemd/nextcloud-notify-push.service.j2
-      dest: /etc/systemd/system/nextcloud-notify-push.service
-      owner: root
-      group: root
-      mode: 0644
+    - name: Enable Nextcloud notify_push daemon systemd service
+      ansible.builtin.service:
+        name: nextcloud-notify-push
+        state: started
+        daemon_reload: true
+        enabled: true
 
-  - name: Enable Nextcloud notify_push daemon systemd service
-    ansible.builtin.service:
-      name: nextcloud-notify-push
-      state: started
-      daemon_reload: yes
-      enabled: yes
+    - name: Install and enable Nextcloud app notify_push
+      become: true
+      become_user: "{{ nextcloud_http_user }}"
+      nextcloud_app:
+        name: notify_push
+        nextcloud_path: "{{ nextcloud_instance }}"
+        state: "{{ nextcloud_apps_upgrade | ternary('latest', 'enabled') }}"
+      delay: 15
+      register: __nextcloud_app_notify_push_installed
+      retries: 3
+      until: __nextcloud_app_notify_push_installed is not failed
 
-  - name: Install and enable Nextcloud app notify_push
-    become: True
-    become_user: "{{ nextcloud_http_user }}"
-    nextcloud_app:
-      name: notify_push
-      nextcloud_path: "{{ nextcloud_instance }}"
-      state: "{{ nextcloud_apps_upgrade | ternary('latest', 'enabled') }}"
-    delay: 15
-    register: __nextcloud_app_notify_push_installed
-    retries: 3
-    until: __nextcloud_app_notify_push_installed is not failed
+    - name: Run handlers (restart webserver) before notify_push tests
+      ansible.builtin.meta: flush_handlers
 
-  - name: Run handlers (restart webserver) before notify_push tests
-    ansible.builtin.meta: flush_handlers
-
-  - name: Test Nextcloud notify_push functionality
-    become: True
-    become_user: "{{ nextcloud_http_user }}"
-    ansible.builtin.command: php occ notify_push:self-test
-    args:
-      chdir: "{{ nextcloud_webroot }}"
-    changed_when: False
-    check_mode: no
-    when: nextcloud_notify_push_self_test | bool
+    - name: Test Nextcloud notify_push functionality
+      become: true
+      become_user: "{{ nextcloud_http_user }}"
+      ansible.builtin.command: php occ notify_push:self-test
+      args:
+        chdir: "{{ nextcloud_webroot }}"
+      changed_when: false
+      check_mode: false
+      when: nextcloud_notify_push_self_test | bool

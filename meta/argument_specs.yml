@@ -3,7 +3,8 @@ argument_specs:
   main:
     short_description: Install, configure and upgrade Nextcloud
     description:
-      - Installs Nextcloud from a release tarball or git, configures it (system and app settings, apps, cron jobs, optional notify_push) and handles upgrades and backups.
+      - Installs Nextcloud from a release tarball or git, configures it (system and app settings, apps, cron jobs, optional notify_push) and handles upgrades
+        and backups.
       - Nextcloud is expected to be served by apache2 or nginx with PHP and MariaDB/MySQL.
     options:
       nextcloud_version:
@@ -13,7 +14,8 @@ argument_specs:
       nextcloud_upgrade:
         type: bool
         description:
-          - Upgrade via Ansible? Set to false if upgrades are handled manually. Make sure to set C(nextcloud_instance) to something without C(nextcloud_version) then.
+          - Upgrade via Ansible? Set to false if upgrades are handled manually. Make sure to set C(nextcloud_instance) to something without C(nextcloud_version)
+            then.
       nextcloud_workdir:
         type: path
         description:
@@ -35,7 +37,8 @@ argument_specs:
       nextcloud_config:
         type: dict
         description:
-          - Nextcloud configuration with the keys C(system) (written to C(config.php)) and C(apps) (app settings set with C(occ config:app:set), a mapping of app name to a mapping of key to value, C(null) deletes a key). Both are optional.
+          - Nextcloud configuration with the keys C(system) (written to C(config.php)) and C(apps) (app settings set with C(occ config:app:set), a mapping of
+            app name to a mapping of key to value, C(null) deletes a key). Both are optional.
         options:
           system:
             type: dict
@@ -48,7 +51,7 @@ argument_specs:
           - nginx
           - none
         description:
-          - 'Supported values: apache2, nginx, none'
+          - "Supported values: apache2, nginx, none"
       nextcloud_php_version:
         type: str
       nextcloud_php_settings:
@@ -141,12 +144,14 @@ argument_specs:
         type: list
         elements: str
         description:
-          - Additional commands to run at the end of configure.yml, for example C(php occ config:app:set files_sharing incoming_server2server_share_enabled --value=true --type=boolean).
+          - Additional commands to run at the end of configure.yml, for example C(php occ config:app:set files_sharing incoming_server2server_share_enabled
+            --value=true --type=boolean).
       nextcloud_patches:
         type: list
         elements: str
         description:
-          - Patch files (.diff) from the playbook directory C(files/nextcloud/patches/) applied to the Nextcloud server root after installation or upgrade, in list order (strip=1).
+          - Patch files (.diff) from the playbook directory C(files/nextcloud/patches/) applied to the Nextcloud server root after installation or upgrade, in
+            list order (strip=1).
       nextcloud_notify_push:
         type: bool
         description:

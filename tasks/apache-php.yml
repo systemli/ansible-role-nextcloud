@@ -3,15 +3,15 @@
   ansible.builtin.command: 'grep -Eq "php_value\s+{{ item.key }}" {{ nextcloud_webroot }}/.htaccess'
   with_dict: "{{ nextcloud_php_settings | default({}) }}"
   register: __nextcloud_htaccess_vars
-  check_mode: False
-  failed_when: False
-  changed_when: False
+  check_mode: false
+  failed_when: false
+  changed_when: false
 
 - name: Replace existing PHP variables in .htaccess
   ansible.builtin.replace:
     dest: "{{ nextcloud_webroot }}/.htaccess"
-    regexp: '^(\s*)php_value\s+{{ item.key }}.*$'
-    replace: '\1php_value {{ item.key }} {{ item.value }}'
+    regexp: "^(\\s*)php_value\\s+{{ item.key }}.*$"
+    replace: "\\1php_value {{ item.key }} {{ item.value }}"
   with_items: "{{ __nextcloud_htaccess_vars | json_query(results_query) }}"
   vars:
     results_query: "results[?rc == `0`].item"
@@ -20,7 +20,7 @@
   ansible.builtin.replace:
     dest: "{{ nextcloud_webroot }}/.htaccess"
     regexp: "^(<IfModule mod_php.*)$"
-    replace: '\1\n  php_value {{ item.key }} {{ item.value }}'
+    replace: "\\1\\n  php_value {{ item.key }} {{ item.value }}"
   with_items: "{{ __nextcloud_htaccess_vars | json_query(results_query) }}"
   vars:
     results_query: "results[?rc == `1`].item"

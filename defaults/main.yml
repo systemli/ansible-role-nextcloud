@@ -3,7 +3,7 @@
 nextcloud_version: "32.0.5"
 # Upgrade via Ansible? Set to `False` if upgrades are handled manually.
 # Make sure to set `nextcloud_instance` to something without `nextcloud_version`.
-nextcloud_upgrade: True
+nextcloud_upgrade: true
 
 # Path to the Nextcloud workdir holding Nextcloud instances
 nextcloud_workdir: "/var/www/nextcloud"
@@ -19,7 +19,7 @@ nextcloud_data_dir: "/srv/nextcloud/data"
 # Nextcloud configuration
 nextcloud_config:
   system:
-    memcache.local: '\OC\Memcache\APCu'
+    memcache.local: "\\OC\\Memcache\\APCu"
     # memcache.distributed: '\OC\Memcache\Redis'
     # memcache.locking: '\OC\Memcache\Redis'
     # redis:
@@ -93,7 +93,7 @@ nextcloud_admin_user: admin
 # nextcloud_admin_password:
 
 # Make Nextcloud available over a webserver alias?
-nextcloud_www_alias: yes
+nextcloud_www_alias: true
 nextcloud_www_alias_name: "nextcloud"
 
 # List of Nextcloud (custom) Apps which should be copied from nextcloud/apps/ to
@@ -107,7 +107,7 @@ nextcloud_apps: []
 nextcloud_apps_disabled: []
 
 # Upgrade nextcloud Apps?
-nextcloud_apps_upgrade: False
+nextcloud_apps_upgrade: false
 
 # How to install Nextcloud (supported: 'git' or 'tar')
 nextcloud_src_type: "tar"
@@ -122,8 +122,8 @@ nextcloud_sig_url: "{{ nextcloud_tar_url }}.asc"
 nextcloud_gpg_key: "28806A878AE423A28372792ED75899B9A724937A"
 
 # Backup Nextcloud instance before upgrade?
-nextcloud_backup: True
-nextcloud_backup_data: False
+nextcloud_backup: true
+nextcloud_backup_data: false
 nextcloud_backup_dir: "/var/backups/nextcloud"
 
 # Dependencies (Debian packages) to install
@@ -171,13 +171,14 @@ nextcloud_configure_additional_commands: []
 nextcloud_patches: []
 
 # Install Nextcloud push notification daemon?
-nextcloud_notify_push: False
+nextcloud_notify_push: false
 
 nextcloud_notify_push_version: "latest"
-nextcloud_notify_push_url: "https://github.com/nextcloud/notify_push/releases/download/v{{ nextcloud_notify_push_version }}/notify_push-x86_64-unknown-linux-musl"
-nextcloud_notify_push_allow_self_signed: False
-nextcloud_notify_push_max_connection_time: False
-nextcloud_notify_push_self_test: True
+nextcloud_notify_push_url: "https://github.com/nextcloud/notify_push/releases/download/v{{ nextcloud_notify_push_version }}/\
+  notify_push-x86_64-unknown-linux-musl"
+nextcloud_notify_push_allow_self_signed: false
+nextcloud_notify_push_max_connection_time: false
+nextcloud_notify_push_self_test: true
 
 # Uncomment to bind Nextcloud notify_push daemon to localhost
 # nextcloud_notify_push_bind: 127.0.0.1
@@ -190,11 +191,11 @@ nextcloud_notify_push_port: 7867
 # nextcloud_notify_push_nextcloud_url: http://cloud-internal.example.org/
 
 # Cleanup old nextcloud version folders
-nextcloud_cleanup_versions: True
+nextcloud_cleanup_versions: true
 nextcloud_cleanup_versions_keep: 4
 
 # Configure automatic app updates via cron
-nextcloud_app_update_cronjob: True
+nextcloud_app_update_cronjob: true
 nextcloud_app_update_cronjob_weekday: "1,3,5"
 
 # Additional occ cronjobs

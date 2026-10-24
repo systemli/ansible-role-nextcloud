@@ -14,19 +14,19 @@
   ansible.builtin.file:
     path: "{{ nextcloud_instance }}"
     state: directory
-    mode: 0755
+    mode: "0755"
   register: __nextcloud_instance_created
 
 - name: "Nextcloud finalize: move new Nextcloud to nextcloud_instance"
   ansible.builtin.command: "cp -a {{ nextcloud_dl_tmp_dir }}/nextcloud/. {{ nextcloud_instance }}/"
-  changed_when: True
+  changed_when: true
 
 - name: "Nextcloud finalize: remove temporary download directory"
   ansible.builtin.file:
     path: "{{ nextcloud_dl_tmp_dir }}"
     state: absent
-  diff: False
-  no_log: True
+  diff: false
+  no_log: true
 
 - name: "Nextcloud finalize: change symlink to nextcloud_instance"
   ansible.builtin.file:

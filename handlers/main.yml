@@ -1,15 +1,14 @@
 ---
-
 - name: Test and reload apache2
   ansible.builtin.command: apache2ctl configtest
-  changed_when: True
+  changed_when: true
   notify: Reload apache2
   listen: Test and reload webserver
   when: nextcloud_webserver == 'apache2'
 
 - name: Test and restart apache2
   ansible.builtin.command: apache2ctl configtest
-  changed_when: True
+  changed_when: true
   notify: Restart apache2
   listen: Test and restart webserver
   when: nextcloud_webserver == 'apache2'
@@ -30,14 +29,14 @@
 
 - name: Test and reload nginx
   ansible.builtin.command: nginx -t
-  changed_when: True
+  changed_when: true
   notify: Reload nginx
   listen: Test and reload webserver
   when: nextcloud_webserver == 'nginx'
 
 - name: Test and restart nginx
   ansible.builtin.command: nginx -t
-  changed_when: True
+  changed_when: true
   notify: Restart nginx
   listen: Test and restart webserver
   when: nextcloud_webserver == 'nginx'

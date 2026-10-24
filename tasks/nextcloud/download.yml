@@ -3,7 +3,7 @@
   ansible.builtin.file:
     name: "{{ nextcloud_dl_tmp_dir }}"
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: "Nextcloud download: clone version branch from git repo"
   ansible.builtin.git:
@@ -37,7 +37,7 @@
         gpgv --keyring ./{{ nextcloud_gpg_key }}.gpg
         {{ nextcloud_sig_url | basename }}
         {{ nextcloud_tar_url | basename }}
-      changed_when: False
+      changed_when: false
 
     - name: "Nextcloud download: ensure sane state before extracting tarball"
       ansible.builtin.file:
@@ -48,7 +48,7 @@
       ansible.builtin.unarchive:
         dest: "{{ nextcloud_dl_tmp_dir }}"
         src: "{{ nextcloud_dl_tmp_dir }}/{{ nextcloud_tar_url | basename }}"
-        remote_src: yes
+        remote_src: true
 
 - name: "Nextcloud download: adjust owner for installation/upgrade"
   ansible.builtin.file:
@@ -56,7 +56,7 @@
     state: directory
     owner: "{{ nextcloud_http_user }}"
     group: "{{ nextcloud_http_group }}"
-    recurse: yes
+    recurse: true
 
 - name: "Nextcloud download: check if new version has been downloaded"
   ansible.builtin.stat:
