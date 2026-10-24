@@ -3,5 +3,6 @@ roles:
   - name: systemli.mariadb
 
 collections:
+  - name: community.general
   - name: ansible.mysql
   - name: ansible.posix
