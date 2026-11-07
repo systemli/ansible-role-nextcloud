@@ -27,6 +27,15 @@
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
+- name: Install Nextcloud dependencies
+  ansible.builtin.apt:
+    pkg: "{{ nextcloud_dependencies_imagick }}"
+    state: present
+  when: nextcloud_install_imagick is true
+  tags:
+    - role:nextcloud:install
+    - role:nextcloud:upgrade
+
 - name: Run php tasks
   ansible.builtin.include_tasks: php.yml
   tags:
