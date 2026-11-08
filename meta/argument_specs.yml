@@ -137,6 +137,11 @@ argument_specs:
         elements: str
         description:
           - Dependencies (Debian packages) to install
+      nextcloud_dependencies_optional:
+        type: list
+        elements: str
+        description:
+          - Optional dependencies (Debian packages) to install
       nextcloud_dependencies_python:
         type: list
         elements: str
