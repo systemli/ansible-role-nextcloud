@@ -27,11 +27,11 @@
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
-- name: Install Nextcloud dependencies
+- name: Install optional Nextcloud dependencies
   ansible.builtin.apt:
-    pkg: "{{ nextcloud_dependencies_imagick }}"
+    pkg: "{{ nextcloud_dependencies_optional }}"
     state: present
-  when: nextcloud_install_imagick is true
+  when: nextcloud_dependencies_optional | length > 0
   tags:
     - role:nextcloud:install
     - role:nextcloud:upgrade

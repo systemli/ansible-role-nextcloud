@@ -147,11 +147,10 @@ nextcloud_dependencies:
   - php-xml
   - php-zip
 
-nextcloud_dependencies_imagick:
+# Optional dependencies - see Readme.md
+nextcloud_dependencies_optional:
   - "{{ 'libmagickcore-7.q16-10-extra' if ansible_distribution_major_version | int >= 13 else 'libmagickcore-6.q16-6-extra' }}"
   - php-imagick
-
-nextcloud_install_imagick: true
 
 nextcloud_dependencies_python:
   - "{{ 'python3' if ansible_python.version.major | int == 3 else 'python' }}-mysqldb"
