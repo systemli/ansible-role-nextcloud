@@ -27,6 +27,15 @@
     - role:nextcloud:install
     - role:nextcloud:upgrade
 
+- name: Install optional Nextcloud dependencies
+  ansible.builtin.apt:
+    pkg: "{{ nextcloud_dependencies_optional }}"
+    state: present
+  when: nextcloud_dependencies_optional | length > 0
+  tags:
+    - role:nextcloud:install
+    - role:nextcloud:upgrade
+
 - name: Run php tasks
   ansible.builtin.include_tasks: php.yml
   tags:

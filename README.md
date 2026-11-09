@@ -40,8 +40,8 @@ The following preliminaries need to be met:
 
 # Usage example
 
-* Integrate the role in your playbook: 
-    
+* Integrate the role in your playbook:
+
 ```
 - hosts: cloud.example.org
   roles:
@@ -51,7 +51,7 @@ The following preliminaries need to be met:
 ```
 
 * Configure role variables in `host_vars` for the target system:
-    
+
 ```
 # Nextcloud settings
 
@@ -80,13 +80,17 @@ nextcloud_apps:
   - contacts
 ```
 
-* Deploy Nextcloud to the target system:  
-    
+> [!TIP]
+> Per default, this role installs `php-imagick` and `libmagickcore` as optional dependencies for local image preview generation. Override with `nextcloud_dependencies_optional = []` in your host or group vars to skip their installation or amend the list to install additional dependencies.
+> We recommend using [Imaginary as an external preview generator](https://docs.nextcloud.com/server/35/admin_manual/installation/server_tuning.html#previews) to reduce the attack surface of your Nextcloud installation.
+
+* Deploy Nextcloud to the target system:
+
   `ansible-playbook site.yml -t nextcloud -l cloud.example.org --diff`
 
 * Configure the VirtualHost in your webserver. The following is an example
-  snippet for a jinja2 Apache2 vhost template:  
-    
+  snippet for a jinja2 Apache2 vhost template:
+
 ```
 {% set nextcloud_webroot = nextcloud_workdir|d() + '/nextcloud-current' %}
 	DocumentRoot {{ nextcloud_webroot }}
