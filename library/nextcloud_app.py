@@ -182,7 +182,10 @@ def occ_command(module, occ_path, occ_command, occ_options='', occ_json=True):
         cmd.append(occ_options)
     rc, out, err = module.run_command(cmd)
     if rc != 0:
-        module.fail_json(msg='occ command {0} failed: {1}'.format(cmd, err))
+        module.fail_json(
+            msg='occ command {0} failed: {1}'.format(cmd, (err or out).strip()),
+            rc=rc, stdout=out, stderr=err,
+        )
     return out
 
 
