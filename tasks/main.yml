@@ -65,6 +65,21 @@
     - role:nextcloud:upgrade
     - role:nextcloud:database
 
+- name: Copy Nextcloud custom apps
+  ansible.builtin.copy:
+    src: "nextcloud/apps/{{ item }}"
+    dest: "{{ (__nextcloud_do_install | bool or __nextcloud_do_upgrade | bool)
+      | ternary(nextcloud_dl_tmp_dir + '/nextcloud', nextcloud_instance) }}/apps/"
+    owner: "{{ nextcloud_http_user }}"
+    group: "{{ nextcloud_http_group }}"
+    mode: "0640"
+    directory_mode: "0750"
+  with_items: "{{ nextcloud_custom_apps }}"
+  tags:
+    - role:nextcloud:install
+    - role:nextcloud:upgrade
+    - role:nextcloud:configure
+
 - name: Install Nextcloud
   ansible.builtin.include_tasks: nextcloud/install.yml
   when: __nextcloud_do_install | bool and not __nextcloud_config.stat.exists
