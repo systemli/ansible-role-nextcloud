@@ -1,15 +1,4 @@
 ---
-- name: Validate Nextcloud webserver
-  ansible.builtin.assert:
-    that:
-      - nextcloud_webserver in ['apache2', 'nginx', 'none']
-    fail_msg: >-
-      Unsupported nextcloud_webserver value '{{ nextcloud_webserver }}'.
-      Supported values are 'apache2', 'nginx' and 'none'.
-  tags:
-    - role:nextcloud
-    - role:nextcloud:install
-    - role:nextcloud:upgrade
 
 - name: Install Nextcloud Python dependencies
   ansible.builtin.apt:

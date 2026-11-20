@@ -52,6 +52,7 @@ argument_specs:
           - none
         description:
           - "Supported values: apache2, nginx, none"
+        required: true
       nextcloud_php_version:
         type: str
       nextcloud_php_settings:
